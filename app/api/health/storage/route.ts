@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { githubPersistenceEnabled, isVercelDeploy } from "@/lib/persist";
+import { STORAGE_HELP, githubPersistenceEnabled, isReadOnlyServerFilesystem, isVercelDeploy } from "@/lib/persist";
 
 export const dynamic = "force-dynamic";
 
@@ -7,13 +7,15 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const github = githubPersistenceEnabled();
   const vercel = isVercelDeploy();
-  const ok = !vercel || github;
+  const readOnly = isReadOnlyServerFilesystem();
+  const ok = !readOnly || github;
   return NextResponse.json({
     ok,
     vercel,
-    persistence: github ? "github" : vercel ? "none" : "local-files",
-    hint: ok
-      ? null
-      : "Thêm GITHUB_TOKEN và GITHUB_REPO trên Vercel rồi redeploy.",
+    readOnlyFs: readOnly,
+    hasGitHubToken: Boolean(process.env.GITHUB_TOKEN?.trim()),
+    hasGitHubRepo: Boolean(process.env.GITHUB_REPO?.trim()),
+    persistence: github ? "github" : readOnly ? "none" : "local-files",
+    hint: ok ? null : STORAGE_HELP,
   });
 }

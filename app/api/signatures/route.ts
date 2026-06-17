@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { STORAGE_HELP, formatStorageError } from "@/lib/persist";
 import { appendSignature, listSignatures } from "@/lib/signature-store";
 
 export const dynamic = "force-dynamic";
@@ -35,9 +36,13 @@ export async function POST(request: Request) {
     const entry = await appendSignature(name, png);
     return NextResponse.json({ entry }, { status: 201 });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Lỗi lưu chữ ký";
+    const msg = formatStorageError(e, "Lỗi lưu chữ ký");
     const status =
-      msg.includes("Vui lòng") || msg.includes("quá") ? 400 : 500;
+      msg.includes("Vui lòng") || msg.includes("quá")
+        ? 400
+        : msg === STORAGE_HELP
+          ? 503
+          : 500;
     return NextResponse.json({ error: msg }, { status });
   }
 }

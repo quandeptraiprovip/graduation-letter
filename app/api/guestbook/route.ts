@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { STORAGE_HELP, formatStorageError } from "@/lib/persist";
 import { appendGuestbook, listGuestbook } from "@/lib/guestbook-store";
 
 export const dynamic = "force-dynamic";
@@ -30,8 +31,12 @@ export async function POST(request: Request) {
     });
     return NextResponse.json({ entry }, { status: 201 });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Lỗi lưu lời chúc";
-    const status = msg.includes("Thiếu") ? 400 : 500;
+    const msg = formatStorageError(e, "Lỗi lưu lời chúc");
+    const status = msg.includes("Thiếu")
+      ? 400
+      : msg === STORAGE_HELP || msg.includes("Vercel")
+        ? 503
+        : 500;
     return NextResponse.json({ error: msg }, { status });
   }
 }

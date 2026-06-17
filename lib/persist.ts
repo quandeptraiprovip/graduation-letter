@@ -15,14 +15,37 @@ export function githubPersistenceEnabled(): boolean {
 }
 
 export function isVercelDeploy(): boolean {
-  return process.env.VERCEL === "1";
+  return (
+    process.env.VERCEL === "1" || Boolean(process.env.VERCEL_ENV?.trim())
+  );
 }
 
-const STORAGE_HELP =
-  "Trên Vercel cần thêm biến môi trường GITHUB_TOKEN (PAT có quyền ghi repo) và GITHUB_REPO (vd: quandeptraiprovip/graduation-letter) rồi redeploy.";
+/** Vercel/Lambda: chỉ đọc được bundle tại /var/task — không ghi file data/. */
+export function isReadOnlyServerFilesystem(): boolean {
+  if (isVercelDeploy()) return true;
+  try {
+    return process.cwd().startsWith("/var/task");
+  } catch {
+    return false;
+  }
+}
+
+export const STORAGE_HELP =
+  "Chưa lưu được: trên Vercel phải cấu hình GITHUB_TOKEN và GITHUB_REPO trong Project → Settings → Environment Variables (Production), rồi Redeploy. File .env.local trên máy không được đưa lên Vercel.";
+
+export function formatStorageError(e: unknown, fallback: string): string {
+  const raw = e instanceof Error ? e.message : fallback;
+  if (raw.includes("EROFS") || raw.includes("read-only file system")) {
+    return STORAGE_HELP;
+  }
+  if (raw.includes("Chưa lưu được") || raw.includes("GITHUB_TOKEN")) {
+    return raw;
+  }
+  return raw || fallback;
+}
 
 export function assertCanWriteToDisk(): void {
-  if (isVercelDeploy() && !githubPersistenceEnabled()) {
+  if (isReadOnlyServerFilesystem() && !githubPersistenceEnabled()) {
     throw new Error(STORAGE_HELP);
   }
 }
@@ -56,8 +79,9 @@ export async function writeDataText(
   }
   assertCanWriteToDisk();
   const local = repoRelativePath.replace(/^data\//, "");
-  await fs.mkdir(path.dirname(dataFilePath(local)), { recursive: true });
-  await fs.writeFile(dataFilePath(local), content, "utf8");
+  const target = dataFilePath(local);
+  await fs.mkdir(path.dirname(target), { recursive: true });
+  await fs.writeFile(target, content, "utf8");
 }
 
 export async function readDataBinary(repoRelativePath: string): Promise<Buffer> {
@@ -88,8 +112,9 @@ export async function writeDataBinary(
   }
   assertCanWriteToDisk();
   const local = repoRelativePath.replace(/^data\//, "");
-  await fs.mkdir(path.dirname(dataFilePath(local)), { recursive: true });
-  await fs.writeFile(dataFilePath(local), data);
+  const target = dataFilePath(local);
+  await fs.mkdir(path.dirname(target), { recursive: true });
+  await fs.writeFile(target, data);
 }
 
 async function readBundledText(
