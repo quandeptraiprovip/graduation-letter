@@ -1,62 +1,65 @@
 import { parseCsv, rowToCsvLine } from "./csv";
 import {
-  readDataBinary,
-  readDataTextOrDefault,
-  writeDataBinary,
-  writeDataText,
-} from "./persist";
+  SHEETS_HELP,
+  appendSheetRow,
+  readSheetRows,
+  sheetsConfigured,
+} from "./google-sheets";
+import { readDataTextOrDefault, writeDataText, isReadOnlyServerFilesystem } from "./persist";
+import { readLocalSignaturePng, storeSignaturePng } from "./signature-storage";
+import type { SignatureEntry } from "./signature-display";
 
-export type SignatureEntry = {
-  timestamp: string;
-  name: string;
-  file: string;
-};
+export type { SignatureEntry } from "./signature-display";
+export { resolveSignatureImageSrc } from "./signature-display";
 
+const TAB = "Signatures";
+const HEADERS = ["timestamp", "name", "imageUrl"];
 const INDEX = "signatures.csv";
-const HEADERS = ["timestamp", "name", "file"];
 const EMPTY = `${HEADERS.join(",")}\n`;
 
-function safeFilename(name: string): string {
-  if (!/^[a-zA-Z0-9._-]+\.png$/.test(name)) {
-    throw new Error("Tên file không hợp lệ");
-  }
-  return name;
+function makeFileId(timestamp: string): string {
+  const slug = timestamp.replace(/[:.]/g, "-");
+  const rand = Math.random().toString(36).slice(2, 8);
+  return `${slug}-${rand}.png`;
 }
 
-async function readIndex(): Promise<string> {
+function rowToEntry(cols: string[]): SignatureEntry | null {
+  const [timestamp, name, imageUrl] = cols;
+  if (!name?.trim() || !imageUrl?.trim()) return null;
+  return { timestamp: timestamp || new Date().toISOString(), name, imageUrl };
+}
+
+async function listFromCsv(): Promise<SignatureEntry[]> {
   const text = await readDataTextOrDefault(INDEX, EMPTY);
-  return text.trim() ? text : EMPTY;
-}
-
-async function writeIndex(content: string): Promise<void> {
-  await writeDataText(INDEX, content, "signatures: update index");
-}
-
-export async function listSignatures(): Promise<SignatureEntry[]> {
-  const text = await readIndex();
-  const rows = parseCsv(text);
+  const rows = parseCsv(text.trim() ? text : EMPTY);
   return rows
-    .map((r) => ({
-      timestamp: r.timestamp,
-      name: r.name,
-      file: r.file,
-    }))
-    .filter((r) => r.name && r.file)
+    .map((r) => {
+      const url = r.imageUrl || r.file;
+      return rowToEntry([r.timestamp, r.name, url]);
+    })
+    .filter((r): r is SignatureEntry => r !== null)
     .sort(
       (a, b) =>
         new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
 }
 
-export async function readSignaturePng(filename: string): Promise<Buffer> {
-  const safe = safeFilename(filename);
-  return readDataBinary(`signatures/${safe}`);
+export async function listSignatures(): Promise<SignatureEntry[]> {
+  if (sheetsConfigured()) {
+    const rows = await readSheetRows(TAB, HEADERS);
+    return rows
+      .map((r) => rowToEntry(r))
+      .filter((r): r is SignatureEntry => r !== null)
+      .sort(
+        (a, b) =>
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
+  }
+  return listFromCsv();
 }
 
-function makeFileId(timestamp: string): string {
-  const slug = timestamp.replace(/[:.]/g, "-");
-  const rand = Math.random().toString(36).slice(2, 8);
-  return `${slug}-${rand}.png`;
+export async function readSignaturePng(filename: string): Promise<Buffer> {
+  return readLocalSignaturePng(filename);
 }
 
 export async function appendSignature(
@@ -70,21 +73,33 @@ export async function appendSignature(
 
   const timestamp = new Date().toISOString();
   const file = makeFileId(timestamp);
-  safeFilename(file);
+  const imageUrl = await storeSignaturePng(file, png);
+  const entry: SignatureEntry = { timestamp, name: trimmed, imageUrl };
 
-  await writeDataBinary(
-    `signatures/${file}`,
-    png,
-    `signature: ${trimmed}`
-  );
+  if (sheetsConfigured()) {
+    await appendSheetRow(TAB, HEADERS, [
+      entry.timestamp,
+      entry.name,
+      entry.imageUrl,
+    ]);
+    return entry;
+  }
 
-  const entry: SignatureEntry = { timestamp, name: trimmed, file };
-  const text = await readIndex();
+  if (isReadOnlyServerFilesystem()) {
+    throw new Error(SHEETS_HELP);
+  }
+
+  const text = await readDataTextOrDefault(INDEX, EMPTY);
   const trimmedText = text.trimEnd();
-  const line = rowToCsvLine(HEADERS, entry);
+  const line = rowToCsvLine(HEADERS, {
+    timestamp: entry.timestamp,
+    name: entry.name,
+    imageUrl: entry.imageUrl,
+  });
   const next = trimmedText
     ? `${trimmedText}\n${line}\n`
     : `${EMPTY}${line}\n`;
-  await writeIndex(next);
+  await writeDataText(INDEX, next, "signatures: update index");
   return entry;
 }
+

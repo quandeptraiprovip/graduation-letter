@@ -1,6 +1,6 @@
 # Thiệp mời lễ tốt nghiệp (Next.js)
 
-Trang thiệp mời tốt nghiệp chạy trên **Next.js 15** (App Router), deploy được trên **Vercel** và nối **GitHub**.
+Trang thiệp mời tốt nghiệp chạy trên **Next.js 15** (App Router), deploy được trên **Vercel**.
 
 ## Chạy local
 
@@ -11,70 +11,64 @@ npm run dev
 
 Mở [http://localhost:3000](http://localhost:3000).
 
-Ghi local: lưu thẳng vào thư mục `data/` (không cần token).
+**Không cấu hình gì thêm:** dữ liệu ghi vào thư mục `data/` (CSV + PNG chữ ký).
+
+**Muốn giống production:** copy `.env.example` → `.env.local`, điền Google Sheets + (tuỳ chọn) Blob.
 
 ## Ảnh
 
 Đặt file vào `public/images/`, rồi gán đường dẫn trong `lib/config.ts` (ví dụ `portrait: "/images/chan-dung.jpg"`). Để trống sẽ hiện khung placeholder.
 
-## Lời chúc, RSVP & chữ ký
+## Lưu trữ dữ liệu
 
-| File | Mục đích |
-|------|----------|
-| `data/guestbook.csv` | Sổ lưu bút |
-| `data/rsvp.csv` | Xác nhận tham dự |
-| `data/signatures.csv` + `data/signatures/*.png` | Chữ ký (`/chu-ky`) |
+| Dữ liệu | Local (mặc định) | Production (Vercel) |
+|--------|------------------|---------------------|
+| Lời chúc | `data/guestbook.csv` | Google Sheet tab **Guestbook** |
+| RSVP | `data/rsvp.csv` | Google Sheet tab **RSVP** |
+| Chữ ký (tên, thời gian, link ảnh) | `data/signatures.csv` | Google Sheet tab **Signatures** |
+| File PNG chữ ký | `data/signatures/*.png` | **Vercel Blob** (URL lưu trong Sheet) |
 
-### Vercel (bắt buộc cấu hình GitHub)
+Trên Vercel, ổ đĩa serverless **chỉ đọc** (`EROFS`) — không ghi được `data/`. Không nên nhét ảnh PNG vào Google Sheet; Sheet chỉ giữ metadata và URL.
 
-Trên Vercel, ổ đĩa serverless **chỉ đọc** (`EROFS`). App **không thể** ghi `data/guestbook.csv` trực tiếp.
+Kiểm tra sau deploy: `GET /api/health/storage` → `"ok": true`, `"persistence": "google-sheets"`, `"signatures": "vercel-blob"`.
 
-Khi đã set `GITHUB_TOKEN` + `GITHUB_REPO`:
+### Google Sheets
 
-- Mỗi lời chúc / RSVP / chữ ký được **commit lên GitHub** (CSV + PNG).
-- Trang web **đọc dữ liệu mới từ GitHub** ngay — không cần redeploy sau mỗi lượt gửi.
-- Máy bạn: `git pull` để tải CSV/ảnh về.
+1. Tạo một Google Spreadsheet, copy **Spreadsheet ID** từ URL (`/d/<ID>/edit`).
+2. [Google Cloud Console](https://console.cloud.google.com/) → tạo project → bật **Google Sheets API**.
+3. **IAM** → **Service Accounts** → tạo account → tạo key JSON.
+4. Mở Sheet → **Share** → thêm email service account (dạng `...@....iam.gserviceaccount.com`) với quyền **Editor**.
+5. App tự tạo các tab `Guestbook`, `RSVP`, `Signatures` và hàng tiêu đề khi ghi lần đầu.
 
-Kiểm tra sau deploy: `GET /api/health/storage` → `{ "ok": true, "persistence": "github" }`.
+### Biến môi trường (Vercel)
 
-### Tạo GitHub token
+Project → **Settings** → **Environment Variables** — bật **Production** (và Preview nếu cần), rồi **Redeploy**:
 
-1. GitHub → **Settings** → **Developer settings** → **Personal access tokens**.
-2. **Fine-grained token** (khuyên dùng):
-   - Repository: repo của bạn (vd. `graduation-letter`)
-   - Permissions: **Contents** → **Read and write**
-3. Hoặc **Classic token** với scope `repo`.
+| Biến | Mô tả |
+|------|--------|
+| `GOOGLE_SHEETS_ID` | ID spreadsheet |
+| `GOOGLE_SERVICE_ACCOUNT_JSON` | Toàn bộ file JSON key (một dòng), **hoặc** |
+| `GOOGLE_CLIENT_EMAIL` + `GOOGLE_PRIVATE_KEY` | Tách từ JSON (`\n` trong key giữ nguyên hoặc dùng chuỗi thật xuống dòng) |
+| `BLOB_READ_WRITE_TOKEN` | Vercel → Storage → Blob → Create store → token Read/Write |
 
-### Biến môi trường trên Vercel
-
-Project → **Settings** → **Environment Variables** — bật cho **Production** (và Preview nếu cần):
-
-| Biến | Giá trị |
-|------|---------|
-| `GITHUB_TOKEN` | PAT vừa tạo |
-| `GITHUB_REPO` | `quandeptraiprovip/graduation-letter` |
-| `GITHUB_BRANCH` | `main` (tuỳ chọn) |
-
-**Redeploy** sau khi thêm biến (Deployments → ⋯ → Redeploy).
-
-### (Tuỳ chọn) Test GitHub trên máy
-
-Trong `.env.local`:
+Ví dụ `.env.local`:
 
 ```env
-GITHUB_TOKEN=ghp_...
-GITHUB_REPO=quandeptraiprovip/graduation-letter
-GITHUB_BRANCH=main
+GOOGLE_SHEETS_ID=1abc...
+GOOGLE_SERVICE_ACCOUNT_JSON={"type":"service_account",...}
+BLOB_READ_WRITE_TOKEN=vercel_blob_rw_...
 ```
 
-Khi có hai biến trên, `npm run dev` cũng ghi/đọc qua GitHub thay vì file local.
+### GitHub (legacy, không bắt buộc)
 
-## Deploy Vercel + GitHub
+Phiên bản cũ ghi CSV/PNG lên repo qua `GITHUB_TOKEN` + `GITHUB_REPO`. Vẫn có trong code nếu chưa chuyển Sheets, nhưng khuyến nghị dùng Sheets + Blob.
+
+## Deploy Vercel
 
 1. Push project lên GitHub.
 2. Import repo trên [vercel.com](https://vercel.com).
-3. Thêm `GITHUB_TOKEN` và `GITHUB_REPO`, redeploy.
-4. Mở `/api/health/storage` — phải `"ok": true`.
+3. Thêm biến Sheets + Blob, redeploy.
+4. Mở `/api/health/storage`.
 
 ## Bản HTML gốc
 

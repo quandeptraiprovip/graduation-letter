@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
 import { SignaturePad, type SignaturePadHandle } from "@/components/SignaturePad";
-import type { SignatureEntry } from "@/lib/signature-store";
+import type { SignatureEntry } from "@/lib/signature-display";
+import { resolveSignatureImageSrc } from "@/lib/signature-display";
 import { useConfetti } from "@/hooks/useConfetti";
 
 function formatWhen(ts: string) {
@@ -13,9 +14,6 @@ function formatWhen(ts: string) {
   return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
 }
 
-function signatureUrl(file: string) {
-  return `/api/signatures/file/${encodeURIComponent(file)}`;
-}
 
 type Props = {
   initialSignatures: SignatureEntry[];
@@ -307,7 +305,7 @@ export function SignaturePageClient({ initialSignatures }: Props) {
           >
             {signatures.map((s) => (
               <div
-                key={s.file}
+                key={s.imageUrl + s.timestamp}
                 style={{
                   background: "#FBF4EF",
                   color: "#4F3B47",
@@ -328,7 +326,7 @@ export function SignaturePageClient({ initialSignatures }: Props) {
                   }}
                 >
                   <Image
-                    src={signatureUrl(s.file)}
+                    src={resolveSignatureImageSrc(s)}
                     alt={`Chữ ký của ${s.name}`}
                     fill
                     sizes="200px"

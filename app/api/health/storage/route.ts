@@ -1,29 +1,33 @@
 import { NextResponse } from "next/server";
-import {
-  STORAGE_HELP,
-  githubPersistenceEnabled,
-  isReadOnlyServerFilesystem,
-  isVercelDeploy,
-} from "@/lib/persist";
-import { getGitHubConfigDiagnostic } from "@/lib/github-config";
+import { getSheetsDiagnostic } from "@/lib/google-sheets";
+import { blobStorageConfigured } from "@/lib/signature-storage";
+import { isReadOnlyServerFilesystem, isVercelDeploy } from "@/lib/persist";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-/** Kiểm tra cấu hình lưu trữ trên server (không lộ token). */
 export async function GET() {
-  const gh = getGitHubConfigDiagnostic();
-  const github = githubPersistenceEnabled();
+  const sheets = getSheetsDiagnostic();
   const readOnly = isReadOnlyServerFilesystem();
-  const ok = !readOnly || github;
+  const blob = blobStorageConfigured();
+  const dataOk = !readOnly || sheets.ok;
+  const signatureOk = !readOnly || blob;
 
   return NextResponse.json({
-    ok,
+    ok: dataOk && signatureOk,
     vercel: isVercelDeploy(),
-    vercelEnv: process.env.VERCEL_ENV ?? null,
-    readOnlyFs: readOnly,
-    persistence: github ? "github" : readOnly ? "none" : "local-files",
-    github: gh,
-    hint: ok ? null : gh.missing.length ? `Thiếu: ${gh.missing.join(", ")}` : STORAGE_HELP,
+    persistence: sheets.ok ? "google-sheets" : readOnly ? "none" : "local-csv",
+    signatures: blob
+      ? "vercel-blob"
+      : readOnly
+        ? "none"
+        : "local-files",
+    sheets,
+    blobConfigured: blob,
+    hint: !dataOk
+      ? "Cấu hình Google Sheets (xem README)."
+      : !signatureOk
+        ? "Trên Vercel: bật Vercel Blob và thêm BLOB_READ_WRITE_TOKEN."
+        : null,
   });
 }

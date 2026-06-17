@@ -11,6 +11,7 @@ import {
   getGitHubConfigDiagnostic,
   githubPersistenceEnabled,
 } from "./github-config";
+import { SHEETS_HELP, sheetsConfigured } from "./google-sheets";
 
 export { githubPersistenceEnabled, getGitHubConfigDiagnostic };
 
@@ -31,30 +32,38 @@ export function isReadOnlyServerFilesystem(): boolean {
 }
 
 export const STORAGE_HELP =
-  "Server chưa thấy GITHUB_TOKEN / GITHUB_REPO. Trên Vercel: Settings → Environment Variables → tick Production → Redeploy (không dùng .env.local). Mở /api/health/storage để xem thiếu biến nào.";
+  "Trên Vercel cần Google Sheets (lời chúc/RSVP) và Vercel Blob (ảnh chữ ký). Xem README và /api/health/storage.";
 
 export function storageHelpFromDiagnostic(): string {
+  if (sheetsConfigured()) return STORAGE_HELP;
   const d = getGitHubConfigDiagnostic();
   if (d.ok) return STORAGE_HELP;
   if (d.missing.length) {
-    return `Thiếu hoặc sai: ${d.missing.join(", ")}. ${STORAGE_HELP}`;
+    return `Thiếu Google Sheets hoặc GitHub: ${d.missing.join(", ")}. ${SHEETS_HELP}`;
   }
-  return STORAGE_HELP;
+  return SHEETS_HELP;
 }
 
 export function formatStorageError(e: unknown, fallback: string): string {
   const raw = e instanceof Error ? e.message : fallback;
   if (raw.includes("EROFS") || raw.includes("read-only file system")) {
-    return STORAGE_HELP;
+    return isReadOnlyServerFilesystem() && !sheetsConfigured()
+      ? SHEETS_HELP
+      : STORAGE_HELP;
   }
-  if (raw.includes("Chưa lưu được") || raw.includes("GITHUB_TOKEN")) {
+  if (
+    raw.includes("Chưa lưu được") ||
+    raw.includes("GITHUB_TOKEN") ||
+    raw.includes("GOOGLE_") ||
+    raw.includes("BLOB_")
+  ) {
     return raw;
   }
   return raw || fallback;
 }
 
 export function assertCanWriteToDisk(): void {
-  if (isReadOnlyServerFilesystem() && !githubPersistenceEnabled()) {
+  if (isReadOnlyServerFilesystem() && !sheetsConfigured() && !githubPersistenceEnabled()) {
     throw new Error(storageHelpFromDiagnostic());
   }
 }
