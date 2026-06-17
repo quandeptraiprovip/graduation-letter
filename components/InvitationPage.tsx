@@ -169,6 +169,17 @@ export function InvitationPage({ initialGuests }: Props) {
     return () => clearTimeout(t);
   }, [launch]);
 
+  useEffect(() => {
+    fetch("/api/guestbook", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.entries?.length) {
+          setGuests(toDisplay(data.entries as GuestEntry[]));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const addGuest = useCallback(async () => {
     const name = gName.trim();
     const msg = gMsg.trim();
@@ -1369,7 +1380,14 @@ export function InvitationPage({ initialGuests }: Props) {
               {guestSubmitting ? "Đang gửi…" : "Gửi lời chúc 💌"}
             </button>
           </div>
-          <FloatingWishes wishes={guests} />
+          <div className="guest-wishes-panel">
+            <p className="guest-wishes-panel-title">Lời chúc đang bay ✨</p>
+            <p className="guest-wishes-panel-sub">
+              Cuộn xuống trên điện thoại nếu bạn vừa gửi lời chúc — khung bay nằm ngay
+              bên dưới form.
+            </p>
+            <FloatingWishes wishes={guests} />
+          </div>
         </div>
       </section>
 

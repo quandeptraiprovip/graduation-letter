@@ -403,8 +403,38 @@ body {
   align-items: stretch;
 }
 
+.guest-wishes-panel-title {
+  margin: 0 0 6px;
+  font-family: "Playfair Display", serif;
+  font-size: 20px;
+  color: #f3d7a8;
+}
+
+.guest-wishes-panel-sub {
+  margin: 0 0 14px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #d9c3cd;
+}
+
+@media (min-width: 901px) {
+  .guest-wishes-panel-sub {
+    display: none;
+  }
+}
+
+.wish-stage--loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wish-stage--slow .wish-bubble--float {
+  animation-timing-function: linear;
+}
+
 @media (max-width: 900px) {
-  .guest-grid .wish-stage {
+  .guest-grid .guest-wishes-panel {
     order: 2;
   }
   .guest-grid .guest-form-panel {

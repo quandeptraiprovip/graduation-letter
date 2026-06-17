@@ -25,9 +25,10 @@ function hash(s: string) {
 
 function buildBubbles(wishes: FloatingWish[], max: number): BubbleSpec[] {
   if (wishes.length === 0) return [];
-  const count = Math.min(max, Math.max(wishes.length, max));
+  const count = Math.max(wishes.length, Math.min(max, wishes.length * 3));
+  const capped = Math.min(max, count);
   const out: BubbleSpec[] = [];
-  for (let i = 0; i < count; i++) {
+  for (let i = 0; i < capped; i++) {
     const w = wishes[i % wishes.length];
     const h = hash(`${w.name}-${w.when}-${i}`);
     out.push({
@@ -48,10 +49,12 @@ type Props = {
 
 export function FloatingWishes({ wishes }: Props) {
   const [heldKey, setHeldKey] = useState<string | null>(null);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const [slowMotion, setSlowMotion] = useState(false);
   const [maxBubbles, setMaxBubbles] = useState(9);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const mq = window.matchMedia("(max-width: 600px)");
     const update = () => setMaxBubbles(mq.matches ? 7 : 11);
     update();
@@ -61,7 +64,7 @@ export function FloatingWishes({ wishes }: Props) {
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const update = () => setReduceMotion(mq.matches);
+    const update = () => setSlowMotion(mq.matches);
     update();
     mq.addEventListener("change", update);
     return () => mq.removeEventListener("change", update);
@@ -113,41 +116,19 @@ export function FloatingWishes({ wishes }: Props) {
     );
   }
 
-  if (reduceMotion) {
+  if (!mounted) {
     return (
-      <div className="wish-stage wish-stage--static">
-        <p className="wish-stage-hint">Chạm một lời chúc để đọc rõ</p>
-        <div className="wish-static-list">
-          {wishes.map((w, i) => {
-            const key = `s-${w.when}-${i}`;
-            const open = heldKey === key;
-            return (
-              <button
-                key={key}
-                type="button"
-                className={`wish-bubble wish-bubble--static${open ? " wish-bubble--held" : ""}`}
-                onClick={() => setHeldKey(open ? null : key)}
-              >
-                <span className="wish-bubble-emoji">{w.emoji}</span>
-                <span className={`wish-bubble-msg${open ? " wish-bubble-msg--full" : ""}`}>
-                  {w.msg}
-                </span>
-                <span
-                  className={`wish-bubble-meta-static${open ? " wish-bubble-meta-static--show" : ""}`}
-                >
-                  — {w.name} · {w.when}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+      <div className="wish-stage wish-stage--loading" aria-hidden>
+        <p className="wish-stage-empty-text">Đang tải lời chúc…</p>
       </div>
     );
   }
 
   return (
     <div
-      className={`wish-stage${heldKey ? " wish-stage--holding" : ""}`}
+      className={`wish-stage${heldKey ? " wish-stage--holding" : ""}${
+        slowMotion ? " wish-stage--slow" : ""
+      }`}
       aria-label="Lời chúc đang bay"
       onPointerUp={heldKey ? release : undefined}
       onPointerCancel={heldKey ? release : undefined}
@@ -157,6 +138,7 @@ export function FloatingWishes({ wishes }: Props) {
       <div className="wish-stage-sky">
         {bubbles.map((b) => {
           const held = heldKey === b.key;
+          const dur = slowMotion ? b.duration * 2.2 : b.duration;
           return (
             <div
               key={b.key}
@@ -166,7 +148,7 @@ export function FloatingWishes({ wishes }: Props) {
               style={
                 {
                   "--wish-x": `${b.x}%`,
-                  "--wish-dur": `${b.duration}s`,
+                  "--wish-dur": `${dur}s`,
                   "--wish-delay": `${b.delay}s`,
                   "--wish-drift": `${b.drift}px`,
                 } as React.CSSProperties

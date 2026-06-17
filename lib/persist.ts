@@ -92,20 +92,34 @@ export async function writeDataBinary(
   await fs.writeFile(dataFilePath(local), data);
 }
 
+async function readBundledText(
+  repoRelativePath: string,
+  defaultContent: string
+): Promise<string> {
+  const local = repoRelativePath.replace(/^data\//, "");
+  try {
+    return await fs.readFile(dataFilePath(local), "utf8");
+  } catch {
+    return defaultContent;
+  }
+}
+
+/** GitHub khi cấu hình; nếu lỗi / file trống → file trong bundle deploy. */
 export async function readDataTextOrDefault(
   repoRelativePath: string,
   defaultContent: string
 ): Promise<string> {
-  if (githubPersistenceEnabled()) {
-    const ghPath = repoRelativePath.startsWith("data/")
-      ? repoRelativePath
-      : `data/${repoRelativePath}`;
-    const t = await githubReadText(ghPath);
-    return t ?? defaultContent;
+  if (!githubPersistenceEnabled()) {
+    return readBundledText(repoRelativePath, defaultContent);
   }
+  const ghPath = repoRelativePath.startsWith("data/")
+    ? repoRelativePath
+    : `data/${repoRelativePath}`;
   try {
-    return await readDataText(repoRelativePath);
-  } catch {
-    return defaultContent;
+    const t = await githubReadText(ghPath);
+    if (t && t.trim().includes("\n")) return t;
+  } catch (e) {
+    console.error("[persist] GitHub read failed, using bundle:", ghPath, e);
   }
+  return readBundledText(repoRelativePath, defaultContent);
 }
