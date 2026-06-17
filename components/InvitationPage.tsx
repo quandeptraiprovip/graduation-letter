@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ImageSlot } from "@/components/ImageSlot";
+import { SignaturePromoSection } from "@/components/SignaturePromoSection";
+import { FloatingWishes } from "@/components/FloatingWishes";
 import { EVENT_ISO, IMAGES, SHOW_FRIEND_MAP } from "@/lib/config";
 import type { GuestEntry } from "@/lib/guestbook-store";
 import { useAmbientMusic } from "@/hooks/useAmbientMusic";
@@ -1231,6 +1233,7 @@ export function InvitationPage({ initialGuests }: Props) {
         </div>
         <div className="guest-grid" style={{ maxWidth: 980, margin: "0 auto" }}>
           <div
+            className="guest-form-panel"
             style={{
               background: "rgba(251,244,239,.06)",
               border: "1px solid rgba(201,160,91,.35)",
@@ -1366,55 +1369,11 @@ export function InvitationPage({ initialGuests }: Props) {
               {guestSubmitting ? "Đang gửi…" : "Gửi lời chúc 💌"}
             </button>
           </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 16,
-              maxHeight: 520,
-              overflowY: "auto",
-              paddingRight: 6,
-            }}
-          >
-            {guests.map((g, i) => (
-              <div
-                key={`${g.when}-${i}`}
-                style={{
-                  background: "#FBF4EF",
-                  color: "#4F3B47",
-                  borderRadius: 18,
-                  padding: "20px 22px",
-                  boxShadow: "0 10px 26px rgba(0,0,0,.18)",
-                }}
-              >
-                <div style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
-                  <div style={{ fontSize: 28, lineHeight: 1 }}>{g.emoji}</div>
-                  <div style={{ flex: 1 }}>
-                    <p style={{ margin: "0 0 10px", fontSize: 16, lineHeight: 1.5 }}>
-                      {g.msg}
-                    </p>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <span
-                        style={{
-                          fontFamily: "'Playfair Display', serif",
-                          fontStyle: "italic",
-                          fontSize: 15,
-                          color: "#8A5E6E",
-                        }}
-                      >
-                        — {g.name}
-                      </span>
-                      <span style={{ fontSize: 12, color: "#B49AAC" }}>
-                        · {g.when}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <FloatingWishes wishes={guests} />
         </div>
       </section>
+
+      <SignaturePromoSection />
 
       {/* RSVP */}
       <section
