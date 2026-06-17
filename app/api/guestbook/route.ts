@@ -5,6 +5,12 @@ import { appendGuestbook, listGuestbook } from "@/lib/guestbook-store";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+function parseCoord(v: unknown): number | undefined {
+  if (v === null || v === undefined || v === "") return undefined;
+  const n = typeof v === "number" ? v : Number(v);
+  return Number.isFinite(n) ? n : undefined;
+}
+
 export async function GET() {
   try {
     const entries = await listGuestbook();
@@ -24,11 +30,17 @@ export async function POST(request: Request) {
       name?: string;
       emoji?: string;
       message?: string;
+      lat?: number;
+      lng?: number;
+      place?: string;
     };
     const entry = await appendGuestbook({
       name: body.name ?? "",
       emoji: body.emoji ?? "💖",
       message: body.message ?? "",
+      lat: parseCoord(body.lat),
+      lng: parseCoord(body.lng),
+      place: body.place ?? "",
     });
     return NextResponse.json({ entry }, { status: 201 });
   } catch (e) {

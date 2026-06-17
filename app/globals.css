@@ -441,3 +441,51 @@ body {
     order: 1;
   }
 }
+
+/* —— Guestbook 3D globe —— */
+.wish-globe-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0 4px;
+  border-radius: 22px;
+  background: radial-gradient(
+    ellipse 80% 70% at 50% 45%,
+    rgba(229, 159, 172, 0.12),
+    transparent 70%
+  );
+  border: 1px solid rgba(201, 160, 91, 0.22);
+}
+
+.wish-globe-placeholder {
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d9c3cd;
+  font-size: 14px;
+}
+
+.wish-globe-caption {
+  margin: 4px 16px 0;
+  text-align: center;
+  font-size: 12px;
+  color: #c9a8b5;
+  line-height: 1.45;
+}
+
+.wish-globe-label {
+  font-family: system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  max-width: 220px;
+  color: #4f3b47;
+}
+
+.wish-focus-place {
+  display: block;
+  font-size: 12px;
+  color: #e8d4dc;
+  margin-top: 4px;
+}

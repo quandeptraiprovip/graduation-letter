@@ -1,20 +1,39 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ImageSlot } from "@/components/ImageSlot";
 import { SignaturePromoSection } from "@/components/SignaturePromoSection";
 import { FloatingWishes } from "@/components/FloatingWishes";
-import { EVENT_ISO, IMAGES, SHOW_FRIEND_MAP } from "@/lib/config";
+import type { GlobeWishPoint } from "@/components/WishGlobe";
+import { EVENT_ISO, EVENT_GEO, IMAGES, SHOW_FRIEND_MAP } from "@/lib/config";
+import { captureWishLocation } from "@/lib/capture-wish-location";
 import type { GuestEntry } from "@/lib/guestbook-store";
 import { useAmbientMusic } from "@/hooks/useAmbientMusic";
 import { useConfetti } from "@/hooks/useConfetti";
 import { useCountdown } from "@/hooks/useCountdown";
+
+const WishGlobe = dynamic(
+  () => import("@/components/WishGlobe").then((m) => m.WishGlobe),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="wish-globe-wrap">
+        <div className="wish-globe-placeholder">Đang tải quả địa cầu…</div>
+      </div>
+    ),
+  }
+);
 
 type DisplayGuest = {
   name: string;
   msg: string;
   emoji: string;
   when: string;
+  lat?: number;
+  lng?: number;
+  place?: string;
+  timestamp: string;
 };
 
 function formatWhen(ts: string) {
@@ -29,6 +48,11 @@ function toDisplay(entries: GuestEntry[]): DisplayGuest[] {
     msg: g.message,
     emoji: g.emoji,
     when: formatWhen(g.timestamp),
+    timestamp: g.timestamp,
+    ...(g.lat !== undefined && g.lng !== undefined
+      ? { lat: g.lat, lng: g.lng }
+      : {}),
+    ...(g.place ? { place: g.place } : {}),
   }));
 }
 
@@ -91,6 +115,8 @@ export function InvitationPage({ initialGuests }: Props) {
   const [gEmoji, setGEmoji] = useState("💖");
   const [guestSubmitting, setGuestSubmitting] = useState(false);
   const [guestError, setGuestError] = useState<string | null>(null);
+  const [shareWishLocation, setShareWishLocation] = useState(true);
+  const [locationHint, setLocationHint] = useState<string | null>(null);
 
   const [rName, setRName] = useState("");
   const [rAttend, setRAttend] = useState<"" | "yes" | "no">("");
@@ -99,6 +125,23 @@ export function InvitationPage({ initialGuests }: Props) {
   const [rsvpSubmitting, setRsvpSubmitting] = useState(false);
 
   const af = FRIENDS[activeFriend] ?? FRIENDS[2];
+
+  const globePoints = useMemo((): GlobeWishPoint[] => {
+    return guests
+      .filter(
+        (g): g is DisplayGuest & { lat: number; lng: number } =>
+          g.lat !== undefined && g.lng !== undefined
+      )
+      .map((g) => ({
+        id: `${g.timestamp}-${g.name}`,
+        lat: g.lat,
+        lng: g.lng,
+        name: g.name,
+        emoji: g.emoji,
+        msg: g.msg,
+        place: g.place,
+      }));
+  }, [guests]);
 
   const leaves = useMemo(() => {
     const N = 4;
@@ -186,11 +229,34 @@ export function InvitationPage({ initialGuests }: Props) {
     if (!name || !msg) return;
     setGuestSubmitting(true);
     setGuestError(null);
+    setLocationHint(null);
     try {
+      let lat: number | undefined;
+      let lng: number | undefined;
+      let place: string | undefined;
+      if (shareWishLocation) {
+        const loc = await captureWishLocation();
+        if (loc) {
+          lat = loc.lat;
+          lng = loc.lng;
+          place = loc.place || undefined;
+        } else {
+          setLocationHint(
+            "Không lấy được vị trí (bạn có thể từ chối quyền). Lời chúc vẫn được gửi."
+          );
+        }
+      }
       const res = await fetch("/api/guestbook", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, message: msg, emoji: gEmoji }),
+        body: JSON.stringify({
+          name,
+          message: msg,
+          emoji: gEmoji,
+          lat,
+          lng,
+          place,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Gửi thất bại");
@@ -201,6 +267,11 @@ export function InvitationPage({ initialGuests }: Props) {
           msg: entry.message,
           emoji: entry.emoji,
           when: formatWhen(entry.timestamp),
+          timestamp: entry.timestamp,
+          ...(entry.lat !== undefined && entry.lng !== undefined
+            ? { lat: entry.lat, lng: entry.lng }
+            : {}),
+          ...(entry.place ? { place: entry.place } : {}),
         },
         ...prev,
       ]);
@@ -213,7 +284,7 @@ export function InvitationPage({ initialGuests }: Props) {
     } finally {
       setGuestSubmitting(false);
     }
-  }, [gEmoji, gMsg, gName, launch]);
+  }, [gEmoji, gMsg, gName, launch, shareWishLocation]);
 
   const submitRSVP = useCallback(async () => {
     const name = rName.trim();
@@ -1241,6 +1312,24 @@ export function InvitationPage({ initialGuests }: Props) {
           >
             Để lại lời chúc nhé
           </h2>
+          <p
+            style={{
+              margin: "14px auto 0",
+              maxWidth: 520,
+              fontSize: 15,
+              lineHeight: 1.55,
+              color: "#D9C3CD",
+            }}
+          >
+            Lời chúc từ khắp nơi — ghim trên quả địa cầu khi bạn cho phép vị trí.
+          </p>
+        </div>
+        <div style={{ maxWidth: 980, margin: "0 auto 36px" }}>
+          <WishGlobe
+            points={globePoints}
+            eventLat={EVENT_GEO.lat}
+            eventLng={EVENT_GEO.lng}
+          />
         </div>
         <div className="guest-grid" style={{ maxWidth: 980, margin: "0 auto" }}>
           <div
@@ -1354,6 +1443,34 @@ export function InvitationPage({ initialGuests }: Props) {
                 marginBottom: 18,
               }}
             />
+            <label
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 10,
+                marginBottom: 14,
+                cursor: "pointer",
+                fontSize: 14,
+                lineHeight: 1.45,
+                color: "#E8D4DC",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={shareWishLocation}
+                onChange={(e) => setShareWishLocation(e.target.checked)}
+                style={{ marginTop: 3, accentColor: "#E59FAC" }}
+              />
+              <span>
+                Ghi nhận vị trí gần đúng để hiện trên địa cầu (trình duyệt sẽ hỏi
+                quyền — không bắt buộc).
+              </span>
+            </label>
+            {locationHint && (
+              <p style={{ color: "#D9C3CD", fontSize: 13, margin: "0 0 12px" }}>
+                {locationHint}
+              </p>
+            )}
             {guestError && (
               <p style={{ color: "#F3C6CE", fontSize: 13, margin: "0 0 12px" }}>
                 {guestError}

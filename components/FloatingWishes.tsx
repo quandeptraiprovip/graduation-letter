@@ -7,6 +7,7 @@ export type FloatingWish = {
   msg: string;
   emoji: string;
   when: string;
+  place?: string;
 };
 
 type BubbleSpec = FloatingWish & {
@@ -100,6 +101,9 @@ export function FloatingWishes({ wishes }: Props) {
       <p className="wish-focus-msg">{b.msg}</p>
       <div className="wish-focus-meta">
         <span className="wish-focus-name">{b.name}</span>
+        {b.place ? (
+          <span className="wish-focus-place">📍 {b.place}</span>
+        ) : null}
         <span className="wish-focus-when">{b.when}</span>
       </div>
       <p className="wish-focus-hint">Thả tay để tiếp tục bay</p>

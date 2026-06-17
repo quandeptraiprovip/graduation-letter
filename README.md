@@ -23,7 +23,7 @@ Mở [http://localhost:3000](http://localhost:3000).
 
 | Dữ liệu | Local (mặc định) | Production (Vercel) |
 |--------|------------------|---------------------|
-| Lời chúc | `data/guestbook.csv` | Google Sheet tab **Guestbook** |
+| Lời chúc | `data/guestbook.csv` | Google Sheet tab **Guestbook** (`lat`, `lng`, `place` tuỳ chọn) |
 | RSVP | `data/rsvp.csv` | Google Sheet tab **RSVP** |
 | Chữ ký (tên, thời gian, link ảnh) | `data/signatures.csv` | Google Sheet tab **Signatures** |
 | File PNG chữ ký | `data/signatures/*.png` | **Vercel Blob** (URL lưu trong Sheet) |

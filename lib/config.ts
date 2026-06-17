@@ -1,6 +1,9 @@
 /** Ngày giờ lễ tốt nghiệp (ISO local, không timezone Z). */
 export const EVENT_ISO = "2026-07-20T09:00";
 
+/** Tọa độ địa điểm lễ (đường cung trên địa cầu hướng về đây). */
+export const EVENT_GEO = { lat: 10.8231, lng: 106.6297 };
+
 export const SHOW_FRIEND_MAP = true;
 
 /** Đường dẫn ảnh trong `public/` — để trống sẽ hiện khung placeholder. */
