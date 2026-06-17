@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #FBF4EF; }
+  image-slot { --slot-bg: #F3E9E2; border-radius: inherit; }
+  @keyframes capDrop {
+    0% { transform: translateY(-118vh) rotate(-44deg); opacity: 0; }
+    60% { opacity: 1; }
+    78% { transform: translateY(8px) rotate(4deg); }
+    100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  }
+  @keyframes floatA { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(26px,-32px) scale(1.06); } }
+  @keyframes floatB { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(-30px,24px) scale(1.08); } }
+  @keyframes twinkle { 0%,100% { opacity:.2; transform:scale(.7);} 50% { opacity:.9; transform:scale(1);} }
+  @keyframes bob { 0%,100% { transform: translateY(0);} 50% { transform: translateY(9px);} }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(24px);} to { opacity:1; transform: translateY(0);} }
+</style>
+</helmet>
+
+<div style="position:relative;font-family:'Be Vietnam Pro',sans-serif;color:#4F3B47;background:#FBF4EF;overflow-x:hidden;">
+
+  <!-- ===================== HERO ===================== -->
+  <section data-screen-label="Hero" style="position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:64px 24px 90px;overflow:hidden;background:radial-gradient(120% 90% at 50% 0%, #FCEFF2 0%, #F4ECF6 45%, #EDF3EE 100%);">
+    <div style="position:absolute;top:-60px;left:-80px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle, rgba(243,198,206,.7), rgba(243,198,206,0) 70%);filter:blur(8px);animation:floatA 11s ease-in-out infinite;z-index:0;"></div>
+    <div style="position:absolute;bottom:-70px;right:-70px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle, rgba(217,205,234,.7), rgba(217,205,234,0) 70%);filter:blur(8px);animation:floatB 13s ease-in-out infinite;z-index:0;"></div>
+    <div style="position:absolute;top:30%;right:14%;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle, rgba(203,231,216,.65), rgba(203,231,216,0) 70%);filter:blur(8px);animation:floatA 15s ease-in-out infinite;z-index:0;"></div>
+    <div style="position:absolute;top:18%;left:22%;width:7px;height:7px;border-radius:50%;background:#C9A05B;animation:twinkle 4s ease-in-out infinite;z-index:1;"></div>
+    <div style="position:absolute;top:24%;right:26%;width:6px;height:6px;border-radius:50%;background:#E59FAC;animation:twinkle 5s ease-in-out .8s infinite;z-index:1;"></div>
+    <div style="position:absolute;bottom:28%;left:30%;width:6px;height:6px;border-radius:50%;background:#B9A5D6;animation:twinkle 4.5s ease-in-out 1.4s infinite;z-index:1;"></div>
+
+    <div ref="{{ heroRef }}" style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;">
+      <div ref="{{ capRef }}" style="width:88px;height:62px;margin-bottom:18px;transform-origin:center;">
+        <svg viewBox="0 0 100 70" width="88" height="62">
+          <polygon points="50,8 96,28 50,48 4,28" fill="#4F3B47"></polygon>
+          <path d="M22 37 V51 Q50 65 78 51 V37 L50 49 Z" fill="#5C4753"></path>
+          <circle cx="50" cy="28" r="4.5" fill="#C9A05B"></circle>
+          <path d="M50 28 L85 31 L85 49" fill="none" stroke="#C9A05B" stroke-width="2.4" stroke-linecap="round"></path>
+          <circle cx="85" cy="52" r="5" fill="#C9A05B"></circle>
+        </svg>
+      </div>
+
+      <div style="font-family:'Be Vietnam Pro';letter-spacing:.36em;font-size:12px;font-weight:600;color:#C9A05B;text-transform:uppercase;">Trân trọng kính mời</div>
+
+      <div style="position:relative;margin:26px 0 22px;">
+        <div style="position:absolute;inset:-12px;border-radius:50%;background:linear-gradient(135deg,#F3C6CE,#D9CDEA,#CBE7D8);filter:blur(2px);"></div>
+        <image-slot id="portrait" style="position:relative;width:186px;height:186px;display:block;border:4px solid #FFFCFA;box-shadow:0 18px 40px rgba(79,59,71,.22);" shape="circle" placeholder="Thả ảnh chân dung"></image-slot>
+      </div>
+
+      <h1 style="font-family:'Playfair Display',serif;font-style:italic;font-weight:600;font-size:62px;line-height:1.04;margin:0;color:#4F3B47;letter-spacing:.5px;">Nguyễn Thị<br>Kiều Diễm</h1>
+
+      <div style="display:flex;align-items:center;gap:14px;margin:22px 0 6px;font-size:15px;font-weight:500;color:#5C4753;">
+        <span>Đại học Bách Khoa TP.HCM</span>
+        <span style="width:5px;height:5px;border-radius:50%;background:#C9A05B;"></span>
+        <span>Khoa Học Máy Tính</span>
+      </div>
+      <div style="font-family:'Be Vietnam Pro';letter-spacing:.28em;font-size:13px;color:#A98AA0;">NIÊN KHÓA 2021 — 2025</div>
+
+      <p style="max-width:440px;margin:30px 0 0;font-family:'Playfair Display',serif;font-style:italic;font-size:21px;line-height:1.55;color:#6B5560;">“Cảm ơn — vì tất cả những yêu thương đã cùng em đi đến ngày hôm nay.”</p>
+
+      <button onClick="{{ replay }}" style="margin-top:34px;border:none;cursor:pointer;background:#4F3B47;color:#FBF4EF;font-family:'Be Vietnam Pro';font-weight:600;font-size:14px;letter-spacing:.04em;padding:14px 28px;border-radius:999px;box-shadow:0 12px 30px rgba(79,59,71,.28);transition:transform .25s;" style-hover="transform:translateY(-3px);">🎓 Tung mũ chúc mừng</button>
+    </div>
+
+    <div style="position:absolute;bottom:26px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:#B49AAC;font-size:11px;letter-spacing:.22em;z-index:2;animation:bob 2.4s ease-in-out infinite;">
+      <span>KÉO XUỐNG</span>
+      <span style="font-size:18px;line-height:1;">↓</span>
+    </div>
+  </section>
+
+  <!-- ===================== COUNTDOWN ===================== -->
+  <section data-screen-label="Countdown" style="position:relative;padding:78px 24px;background:#4F3B47;color:#FBF4EF;text-align:center;overflow:hidden;">
+    <div style="position:absolute;top:-40px;right:8%;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle, rgba(217,205,234,.28), transparent 70%);"></div>
+    <div style="position:absolute;bottom:-50px;left:6%;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle, rgba(243,198,206,.24), transparent 70%);"></div>
+    <div style="position:relative;z-index:1;">
+      <div style="font-family:'Be Vietnam Pro';letter-spacing:.34em;font-size:12px;font-weight:600;color:#E0B7C2;text-transform:uppercase;">Đếm ngược đến ngày trọng đại</div>
+      <h2 style="font-family:'Playfair Display',serif;font-style:italic;font-weight:500;font-size:34px;margin:14px 0 38px;color:#FBF4EF;">Còn một chút nữa thôi…</h2>
+      <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;">
+        <div style="min-width:108px;padding:22px 14px;background:rgba(251,244,239,.07);border:1px solid rgba(201,160,91,.4);border-radius:18px;backdrop-filter:blur(4px);">
+          <div ref="{{ dRef }}" style="font-family:'Playfair Display',serif;font-weight:700;font-size:48px;line-height:1;color:#F3D7A8;">{{ cdDays }}</div>
+          <div style="margin-top:8px;font-size:11px;letter-spacing:.2em;color:#D9C3CD;">NGÀY</div>
+        </div>
+        <div style="min-width:108px;padding:22px 14px;background:rgba(251,244,239,.07);border:1px solid rgba(201,160,91,.4);border-radius:18px;backdrop-filter:blur(4px);">
+          <div ref="{{ hRef }}" style="font-family:'Playfair Display',serif;font-weight:700;font-size:48px;line-height:1;color:#F3D7A8;">{{ cdHours }}</div>
+          <div style="margin-top:8px;font-size:11px;letter-spacing:.2em;color:#D9C3CD;">GIỜ</div>
+        </div>
+        <div style="min-width:108px;padding:22px 14px;background:rgba(251,244,239,.07);border:1px solid rgba(201,160,91,.4);border-radius:18px;backdrop-filter:blur(4px);">
+          <div ref="{{ mRef }}" style="font-family:'Playfair Display',serif;font-weight:700;font-size:48px;line-height:1;color:#F3D7A8;">{{ cdMins }}</div>
+          <div style="margin-top:8px;font-size:11px;letter-spacing:.2em;color:#D9C3CD;">PHÚT</div>
+        </div>
+        <div style="min-width:108px;padding:22px 14px;background:rgba(251,244,239,.07);border:1px solid rgba(201,160,91,.4);border-radius:18px;backdrop-filter:blur(4px);">
+          <div ref="{{ sRef }}" style="font-family:'Playfair Display',serif;font-weight:700;font-size:48px;line-height:1;color:#F3D7A8;">{{ cdSecs }}</div>
+          <div style="margin-top:8px;font-size:11px;letter-spacing:.2em;color:#D9C3CD;">GIÂY</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== EVENT + MAP ===================== -->
+  <section data-screen-label="Event" style="padding:84px 24px;background:#FBF4EF;">
+    <div style="max-width:980px;margin:0 auto;">
+      <div style="text-align:center;margin:0 auto 46px;max-width:620px;">
+        <div style="font-family:'Be Vietnam Pro';letter-spacing:.32em;font-size:12px;font-weight:600;color:#C9A05B;text-transform:uppercase;">Thông tin buổi lễ</div>
+        <h2 style="font-family:'Playfair Display',serif;font-weight:600;font-size:42px;color:#4F3B47;margin:10px 0 0;">Lễ Tốt Nghiệp</h2>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1.15fr;gap:28px;align-items:stretch;">
+        <div style="background:#FFFCFA;border:1px solid rgba(201,160,91,.25);border-radius:22px;padding:38px 34px;box-shadow:0 16px 40px rgba(79,59,71,.08);display:flex;flex-direction:column;justify-content:center;gap:30px;">
+          <div style="display:flex;gap:18px;align-items:flex-start;">
+            <div style="flex:none;width:54px;height:54px;border-radius:16px;background:linear-gradient(150deg,#F3C6CE,#E59FAC);display:flex;align-items:center;justify-content:center;font-size:24px;">📅</div>
+            <div>
+              <div style="font-size:12px;letter-spacing:.18em;color:#A98AA0;text-transform:uppercase;margin-bottom:6px;">Thời gian</div>
+              <div style="font-family:'Playfair Display',serif;font-size:24px;color:#4F3B47;line-height:1.25;">9:00 sáng</div>
+              <div style="font-size:15px;color:#6B5560;">Chủ Nhật, ngày 20 tháng 07, 2026</div>
+            </div>
+          </div>
+          <div style="height:1px;background:rgba(201,160,91,.22);"></div>
+          <div style="display:flex;gap:18px;align-items:flex-start;">
+            <div style="flex:none;width:54px;height:54px;border-radius:16px;background:linear-gradient(150deg,#D9CDEA,#B9A5D6);display:flex;align-items:center;justify-content:center;font-size:24px;">📍</div>
+            <div>
+              <div style="font-size:12px;letter-spacing:.18em;color:#A98AA0;text-transform:uppercase;margin-bottom:6px;">Địa điểm</div>
+              <div style="font-family:'Playfair Display',serif;font-size:24px;color:#4F3B47;line-height:1.25;">Hội trường A</div>
+              <div style="font-size:15px;color:#6B5560;">ĐH Bách Khoa — 268 Lý Thường Kiệt,<br>Phường 14, Quận 10, TP.HCM</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <a href="https://www.google.com/maps/dir/?api=1&destination=268%20L%C3%BD%20Th%C6%B0%E1%BB%9Dng%20Ki%E1%BB%87t%2C%20Qu%E1%BA%ADn%2010%2C%20TP.HCM" target="_blank" rel="noopener" style="flex:1;min-width:150px;text-align:center;text-decoration:none;background:#4F3B47;color:#FBF4EF;font-weight:600;font-size:14px;padding:14px 18px;border-radius:999px;transition:transform .2s;" style-hover="transform:translateY(-2px);">🧭 Chỉ đường</a>
+            <a href="https://maps.google.com/?q=268%20L%C3%BD%20Th%C6%B0%E1%BB%9Dng%20Ki%E1%BB%87t%2C%20Qu%E1%BA%ADn%2010%2C%20TP.HCM" target="_blank" rel="noopener" style="flex:1;min-width:150px;text-align:center;text-decoration:none;background:#FBEAEE;color:#4F3B47;font-weight:600;font-size:14px;padding:14px 18px;border-radius:999px;border:1px solid rgba(229,159,172,.5);transition:transform .2s;" style-hover="transform:translateY(-2px);">📱 Mở trên điện thoại</a>
+          </div>
+        </div>
+
+        <div style="border-radius:22px;overflow:hidden;box-shadow:0 16px 40px rgba(79,59,71,.12);border:1px solid rgba(201,160,91,.25);min-height:380px;">
+          <iframe title="Bản đồ địa điểm" src="https://maps.google.com/maps?q=268%20L%C3%BD%20Th%C6%B0%E1%BB%9Dng%20Ki%E1%BB%87t%2C%20Qu%E1%BA%ADn%2010%2C%20TP.HCM&z=15&output=embed" style="width:100%;height:100%;min-height:380px;border:0;display:block;" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ALBUM (POLAROIDS) ===================== -->
+  <section data-screen-label="Album" style="padding:84px 24px;background:linear-gradient(180deg,#F4ECF6,#FBF4EF);overflow:hidden;">
+    <div style="text-align:center;margin:0 auto 50px;max-width:620px;">
+      <div style="font-family:'Be Vietnam Pro';letter-spacing:.32em;font-size:12px;font-weight:600;color:#C9A05B;text-transform:uppercase;">Album hành trình</div>
+      <h2 style="font-family:'Playfair Display',serif;font-weight:600;font-size:42px;color:#4F3B47;margin:10px 0 0;">Bốn năm thanh xuân</h2>
+      <p style="color:#7A6470;font-size:15px;margin:14px 0 0;">Kéo & thả ảnh của bạn vào từng khung để hoàn thiện album.</p>
+    </div>
+    <div style="display:flex;gap:26px;justify-content:center;flex-wrap:wrap;max-width:1100px;margin:0 auto;">
+      <sc-for list="{{ album }}" as="a" hint-placeholder-count="5">
+        <div style="flex:none;width:206px;background:#FFFCFA;padding:13px 13px 0;border-radius:5px;box-shadow:0 14px 30px rgba(79,59,71,.16);transition:transform .35s ease;" style-hover="transform:translateY(-10px) rotate(-1.5deg);">
+          <image-slot id="{{ a.slot }}" style="width:100%;height:200px;display:block;" shape="rect" placeholder="Thả ảnh"></image-slot>
+          <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:17px;color:#5C4753;text-align:center;padding:15px 4px 20px;">{{ a.cap }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- ===================== FLIPBOOK ===================== -->
+  <section data-screen-label="Yearbook" style="padding:84px 24px 96px;background:#FBF4EF;text-align:center;">
+    <div style="text-align:center;margin:0 auto 44px;max-width:620px;">
+      <div style="font-family:'Be Vietnam Pro';letter-spacing:.32em;font-size:12px;font-weight:600;color:#C9A05B;text-transform:uppercase;">Cuốn kỷ yếu</div>
+      <h2 style="font-family:'Playfair Display',serif;font-weight:600;font-size:42px;color:#4F3B47;margin:10px 0 0;">Lật từng trang ký ức</h2>
+    </div>
+
+    <div style="position:relative;width:560px;max-width:100%;height:380px;perspective:2400px;margin:0 auto;">
+      <div style="position:absolute;top:0;left:0;width:280px;height:380px;border-radius:6px 0 0 6px;background:#F1E4DC;box-shadow:inset -22px 0 34px rgba(79,59,71,.14);border:1px solid rgba(201,160,91,.3);"></div>
+      <sc-for list="{{ leaves }}" as="lf" hint-placeholder-count="4">
+        <div style="position:absolute;top:0;left:280px;width:280px;height:380px;transform-origin:left center;transform-style:preserve-3d;transition:transform .95s cubic-bezier(.645,.045,.355,1);transform:{{ lf.tf }};z-index:{{ lf.z }};">
+          <!-- FRONT -->
+          <div style="position:absolute;inset:0;backface-visibility:hidden;border-radius:0 6px 6px 0;overflow:hidden;background:#FFFCFA;border:1px solid rgba(201,160,91,.32);box-shadow:6px 6px 22px rgba(79,59,71,.16);display:flex;flex-direction:column;">
+            <sc-if value="{{ lf.front.cover }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:linear-gradient(160deg,#F3C6CE,#D9CDEA);padding:24px;">
+                <div style="font-family:'Be Vietnam Pro';letter-spacing:.34em;font-size:11px;color:#5C4753;">KỶ YẾU</div>
+                <div style="font-family:'Playfair Display',serif;font-style:italic;font-weight:600;font-size:30px;color:#4F3B47;">2021 — 2025</div>
+                <div style="font-family:'Playfair Display',serif;font-size:20px;color:#6B5560;">Kiều Diễm</div>
+                <div style="margin-top:8px;font-size:12px;color:#7A6470;letter-spacing:.1em;">Bấm “Trang sau” để mở →</div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ lf.front.slot }}" hint-placeholder-val="{{ true }}">
+              <image-slot id="{{ lf.front.slot }}" style="width:100%;flex:1;display:block;" shape="rect" placeholder="Thả ảnh"></image-slot>
+              <div style="padding:11px 14px;font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:#5C4753;border-top:1px solid rgba(201,160,91,.3);background:#FFFCFA;">{{ lf.front.cap }}</div>
+            </sc-if>
+          </div>
+          <!-- BACK -->
+          <div style="position:absolute;inset:0;backface-visibility:hidden;transform:rotateY(180deg);border-radius:6px 0 0 6px;overflow:hidden;background:#FFFCFA;border:1px solid rgba(201,160,91,.32);box-shadow:-6px 6px 22px rgba(79,59,71,.16);display:flex;flex-direction:column;">
+            <sc-if value="{{ lf.back.endcover }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:linear-gradient(160deg,#CBE7D8,#D9CDEA);padding:24px;text-align:center;">
+                <div style="font-family:'Playfair Display',serif;font-style:italic;font-size:24px;color:#4F3B47;">Cảm ơn vì đã<br>đồng hành 💛</div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ lf.back.slot }}" hint-placeholder-val="{{ true }}">
+              <image-slot id="{{ lf.back.slot }}" style="width:100%;flex:1;display:block;" shape="rect" placeholder="Thả ảnh"></image-slot>
+              <div style="padding:11px 14px;font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:#5C4753;border-top:1px solid rgba(201,160,91,.3);background:#FFFCFA;">{{ lf.back.cap }}</div>
+            </sc-if>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:flex;align-items:center;justify-content:center;gap:18px;margin-top:34px;">
+      <button onClick="{{ prevPage }}" style="border:1px solid rgba(201,160,91,.5);background:#FFFCFA;color:#4F3B47;font-weight:600;font-size:14px;padding:11px 22px;border-radius:999px;cursor:pointer;transition:transform .2s;" style-hover="transform:translateY(-2px);">← Trang trước</button>
+      <span style="font-size:13px;color:#A98AA0;letter-spacing:.1em;min-width:78px;">{{ pageLabel }}</span>
+      <button onClick="{{ nextPage }}" style="border:none;background:#4F3B47;color:#FBF4EF;font-weight:600;font-size:14px;padding:11px 22px;border-radius:999px;cursor:pointer;transition:transform .2s;" style-hover="transform:translateY(-2px);">Trang sau →</button>
+    </div>
+  </section>
+
+  <!-- ===================== FRIEND MAP ===================== -->
+  <sc-if value="{{ showFriendMap }}" hint-placeholder-val="{{ true }}">
+  <section data-screen-label="FriendMap" style="padding:84px 24px;background:linear-gradient(180deg,#EDF3EE,#FBF4EF);">
+    <div style="text-align:center;margin:0 auto 46px;max-width:620px;">
+      <div style="font-family:'Be Vietnam Pro';letter-spacing:.32em;font-size:12px;font-weight:600;color:#C9A05B;text-transform:uppercase;">Bản đồ bạn bè</div>
+      <h2 style="font-family:'Playfair Display',serif;font-weight:600;font-size:42px;color:#4F3B47;margin:10px 0 0;">Lời chúc từ khắp nơi</h2>
+    </div>
+    <div style="max-width:880px;margin:0 auto;display:grid;grid-template-columns:1.1fr 1fr;gap:34px;align-items:center;">
+      <div style="position:relative;height:440px;border-radius:24px;background:radial-gradient(80% 60% at 55% 40%, rgba(203,231,216,.5), rgba(217,205,234,.35));border:1px solid rgba(201,160,91,.25);box-shadow:0 16px 40px rgba(79,59,71,.1);overflow:hidden;">
+        <div style="position:absolute;top:8%;bottom:8%;left:40%;width:34%;border-radius:48% 52% 60% 40%/40% 30% 70% 60%;background:linear-gradient(160deg,#CBE7D8,#A9D4C2);opacity:.85;box-shadow:0 10px 24px rgba(79,59,71,.12);"></div>
+        <button onClick="{{ pickFriend0 }}" style="position:absolute;top:13%;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;cursor:pointer;">
+          <span style="width:16px;height:16px;border-radius:50%;background:#E59FAC;border:3px solid #FFFCFA;box-shadow:0 4px 12px rgba(79,59,71,.25);"></span>
+          <span style="font-size:12px;font-weight:600;color:#4F3B47;background:#FFFCFAcc;padding:3px 9px;border-radius:999px;">Hà Nội</span>
+        </button>
+        <button onClick="{{ pickFriend1 }}" style="position:absolute;top:46%;left:62%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;cursor:pointer;">
+          <span style="width:16px;height:16px;border-radius:50%;background:#C9A05B;border:3px solid #FFFCFA;box-shadow:0 4px 12px rgba(79,59,71,.25);"></span>
+          <span style="font-size:12px;font-weight:600;color:#4F3B47;background:#FFFCFAcc;padding:3px 9px;border-radius:999px;">Đà Nẵng</span>
+        </button>
+        <button onClick="{{ pickFriend2 }}" style="position:absolute;top:79%;left:40%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;cursor:pointer;">
+          <span style="width:18px;height:18px;border-radius:50%;background:#B9A5D6;border:3px solid #FFFCFA;box-shadow:0 4px 12px rgba(79,59,71,.25);"></span>
+          <span style="font-size:12px;font-weight:600;color:#4F3B47;background:#FFFCFAcc;padding:3px 9px;border-radius:999px;">TP.HCM</span>
+        </button>
+        <button onClick="{{ pickFriend3 }}" style="position:absolute;top:90%;left:80%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:none;cursor:pointer;">
+          <span style="width:14px;height:14px;border-radius:50%;background:#7FB7E0;border:3px solid #FFFCFA;box-shadow:0 4px 12px rgba(79,59,71,.25);"></span>
+          <span style="font-size:12px;font-weight:600;color:#4F3B47;background:#FFFCFAcc;padding:3px 9px;border-radius:999px;">Hải ngoại</span>
+        </button>
+      </div>
+      <div style="background:#FFFCFA;border-radius:22px;padding:36px 32px;box-shadow:0 16px 40px rgba(79,59,71,.1);border:1px solid rgba(201,160,91,.25);">
+        <div style="font-size:40px;line-height:1;">{{ af.emoji }}</div>
+        <p style="font-family:'Playfair Display',serif;font-style:italic;font-size:24px;line-height:1.45;color:#4F3B47;margin:16px 0 20px;">“{{ af.msg }}”</p>
+        <div style="font-weight:600;font-size:16px;color:#5C4753;">{{ af.name }}</div>
+        <div style="font-size:13px;color:#A98AA0;letter-spacing:.1em;margin-top:2px;">{{ af.place }}</div>
+        <div style="margin-top:18px;font-size:12px;color:#B49AAC;">Bấm vào các điểm trên bản đồ để xem lời chúc →</div>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- ===================== GUESTBOOK ===================== -->
+  <section data-screen-label="Guestbook" style="padding:84px 24px;background:#4F3B47;color:#FBF4EF;">
+    <div style="text-align:center;margin:0 auto 46px;max-width:620px;">
+      <div style="font-family:'Be Vietnam Pro';letter-spacing:.32em;font-size:12px;font-weight:600;color:#E0B7C2;text-transform:uppercase;">Sổ lưu bút</div>
+      <h2 style="font-family:'Playfair Display',serif;font-weight:600;font-size:42px;color:#FBF4EF;margin:10px 0 0;">Để lại lời chúc nhé</h2>
+    </div>
+
+    <div style="max-width:980px;margin:0 auto;display:grid;grid-template-columns:360px 1fr;gap:34px;align-items:start;">
+      <div style="background:rgba(251,244,239,.06);border:1px solid rgba(201,160,91,.35);border-radius:22px;padding:28px 26px;backdrop-filter:blur(4px);">
+        <label style="display:block;font-size:12px;letter-spacing:.16em;color:#D9C3CD;text-transform:uppercase;margin-bottom:8px;">Tên của bạn</label>
+        <input value="{{ gName }}" onInput="{{ onGName }}" placeholder="VD: Chị Lan" style="width:100%;padding:13px 15px;border-radius:12px;border:1px solid rgba(201,160,91,.4);background:rgba(251,244,239,.08);color:#FBF4EF;font-family:'Be Vietnam Pro';font-size:15px;outline:none;margin-bottom:18px;">
+        <label style="display:block;font-size:12px;letter-spacing:.16em;color:#D9C3CD;text-transform:uppercase;margin-bottom:8px;">Chọn biểu tượng</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;">
+          <sc-for list="{{ gEmojis }}" as="e" hint-placeholder-count="8">
+            <button onClick="{{ e.pick }}" style="width:42px;height:42px;font-size:20px;border-radius:12px;cursor:pointer;background:{{ e.bg }};border:{{ e.ring }};transition:transform .15s;" style-hover="transform:scale(1.12);">{{ e.em }}</button>
+          </sc-for>
+        </div>
+        <label style="display:block;font-size:12px;letter-spacing:.16em;color:#D9C3CD;text-transform:uppercase;margin-bottom:8px;">Lời chúc</label>
+        <textarea value="{{ gMsg }}" onInput="{{ onGMsg }}" placeholder="Viết điều gì đó thật dễ thương…" rows="3" style="width:100%;padding:13px 15px;border-radius:12px;border:1px solid rgba(201,160,91,.4);background:rgba(251,244,239,.08);color:#FBF4EF;font-family:'Be Vietnam Pro';font-size:15px;outline:none;resize:vertical;margin-bottom:18px;"></textarea>
+        <button onClick="{{ addGuest }}" style="width:100%;border:none;cursor:pointer;background:linear-gradient(135deg,#F3C6CE,#E59FAC);color:#4F3B47;font-weight:700;font-size:15px;padding:14px;border-radius:999px;transition:transform .2s;" style-hover="transform:translateY(-2px);">Gửi lời chúc 💌</button>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px;max-height:520px;overflow-y:auto;padding-right:6px;">
+        <sc-for list="{{ guests }}" as="g" hint-placeholder-count="3">
+          <div style="background:#FBF4EF;color:#4F3B47;border-radius:18px;padding:20px 22px;box-shadow:0 10px 26px rgba(0,0,0,.18);">
+            <div style="display:flex;align-items:flex-start;gap:14px;">
+              <div style="flex:none;font-size:28px;line-height:1;">{{ g.emoji }}</div>
+              <div style="flex:1;">
+                <p style="margin:0 0 10px;font-size:16px;line-height:1.5;color:#4F3B47;">{{ g.msg }}</p>
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <span style="font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:#8A5E6E;">— {{ g.name }}</span>
+                  <span style="font-size:12px;color:#B49AAC;">· {{ g.when }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== RSVP ===================== -->
+  <section data-screen-label="RSVP" style="padding:88px 24px 96px;background:linear-gradient(180deg,#FCEFF2,#F4ECF6);">
+    <div style="max-width:560px;margin:0 auto;text-align:center;">
+      <div style="font-family:'Be Vietnam Pro';letter-spacing:.32em;font-size:12px;font-weight:600;color:#C9A05B;text-transform:uppercase;">Xác nhận tham dự</div>
+      <h2 style="font-family:'Playfair Display',serif;font-weight:600;font-size:42px;color:#4F3B47;margin:10px 0 8px;">Bạn sẽ đến chứ?</h2>
+      <p style="color:#7A6470;font-size:15px;margin:0 0 34px;">Diễm rất mong được gặp bạn trong ngày đặc biệt này.</p>
+
+      <sc-if value="{{ rDone }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#FFFCFA;border-radius:24px;padding:48px 36px;box-shadow:0 20px 50px rgba(79,59,71,.12);border:1px solid rgba(201,160,91,.3);">
+          <div style="font-size:52px;line-height:1;">{{ rsvpIcon }}</div>
+          <h3 style="font-family:'Playfair Display',serif;font-style:italic;font-size:28px;color:#4F3B47;margin:18px 0 10px;">{{ rsvpTitle }}</h3>
+          <p style="color:#6B5560;font-size:15px;margin:0;">{{ rsvpSub }}</p>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ rFormOpen }}" hint-placeholder-val="{{ true }}">
+        <div style="background:#FFFCFA;border-radius:24px;padding:34px 32px;box-shadow:0 20px 50px rgba(79,59,71,.1);border:1px solid rgba(201,160,91,.25);text-align:left;">
+          <label style="display:block;font-size:12px;letter-spacing:.16em;color:#A98AA0;text-transform:uppercase;margin-bottom:8px;">Họ và tên</label>
+          <input value="{{ rName }}" onInput="{{ onRName }}" placeholder="Tên của bạn" style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(201,160,91,.4);background:#FBF4EF;color:#4F3B47;font-family:'Be Vietnam Pro';font-size:15px;outline:none;margin-bottom:20px;">
+
+          <label style="display:block;font-size:12px;letter-spacing:.16em;color:#A98AA0;text-transform:uppercase;margin-bottom:8px;">Bạn sẽ tham dự?</label>
+          <div style="display:flex;gap:12px;margin-bottom:20px;">
+            <sc-for list="{{ rsvpOpts }}" as="o" hint-placeholder-count="2">
+              <button onClick="{{ o.pick }}" style="flex:1;cursor:pointer;font-family:'Be Vietnam Pro';font-weight:600;font-size:14px;padding:14px 12px;border-radius:14px;background:{{ o.bg }};color:{{ o.color }};border:{{ o.border }};transition:transform .15s;" style-hover="transform:translateY(-2px);">{{ o.label }}</button>
+            </sc-for>
+          </div>
+
+          <label style="display:block;font-size:12px;letter-spacing:.16em;color:#A98AA0;text-transform:uppercase;margin-bottom:8px;">Lời nhắn (tuỳ chọn)</label>
+          <textarea value="{{ rMsg }}" onInput="{{ onRMsg }}" placeholder="Gửi lời chúc mừng tới Diễm…" rows="3" style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(201,160,91,.4);background:#FBF4EF;color:#4F3B47;font-family:'Be Vietnam Pro';font-size:15px;outline:none;resize:vertical;margin-bottom:22px;"></textarea>
+
+          <button onClick="{{ submitRSVP }}" style="width:100%;border:none;cursor:pointer;background:#4F3B47;color:#FBF4EF;font-weight:700;font-size:16px;padding:16px;border-radius:999px;transition:transform .2s;" style-hover="transform:translateY(-2px);">Gửi xác nhận</button>
+          <p style="text-align:center;font-size:12px;color:#B49AAC;margin:14px 0 0;">Thông tin được lưu an toàn trên trình duyệt của bạn (bản demo).</p>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="text-align:center;margin-top:64px;">
+      <div style="width:56px;height:40px;margin:0 auto 14px;">
+        <svg viewBox="0 0 100 70" width="56" height="40">
+          <polygon points="50,8 96,28 50,48 4,28" fill="#C9A05B"></polygon>
+          <path d="M22 37 V51 Q50 65 78 51 V37 L50 49 Z" fill="#D9B884"></path>
+          <circle cx="50" cy="28" r="4.5" fill="#4F3B47"></circle>
+        </svg>
+      </div>
+      <p style="font-family:'Playfair Display',serif;font-style:italic;font-size:20px;color:#6B5560;margin:0;">Với tất cả lòng biết ơn — Kiều Diễm</p>
+    </div>
+  </section>
+
+  <!-- ===================== FIXED OVERLAYS ===================== -->
+  <canvas ref="{{ canvasRef }}" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60;"></canvas>
+
+  <button onClick="{{ toggleMusic }}" style="position:fixed;bottom:22px;right:22px;z-index:70;display:flex;align-items:center;gap:8px;cursor:pointer;border:1px solid rgba(201,160,91,.5);background:#FFFCFAee;color:#4F3B47;font-family:'Be Vietnam Pro';font-weight:600;font-size:13px;padding:11px 16px;border-radius:999px;box-shadow:0 10px 26px rgba(79,59,71,.2);backdrop-filter:blur(6px);transition:transform .2s;" style-hover="transform:translateY(-2px);">{{ musicLabel }}</button>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1200, &quot;height&quot;: 820 },
+  &quot;confettiOnLoad&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot; },
+  &quot;showFriendMap&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot; },
+  &quot;eventISO&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;2026-07-20T09:00&quot;, &quot;tsType&quot;: &quot;string&quot; }
+}">
+class Component extends DCLogic {
+  state = {
+    musicOn: false,
+    page: 0,
+    activeFriend: 2,
+    guests: [],
+    gName: '', gMsg: '', gEmoji: '💖',
+    rName: '', rAttend: '', rMsg: '', rDone: false,
+  };
+
+  componentDidMount() {
+    this._animateIn();
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem('grad_guestbook') || 'null'); } catch (e) {}
+    if (Array.isArray(saved) && saved.length) {
+      this.setState({ guests: saved });
+    } else {
+      this.setState({ guests: [
+        { name: 'Cô Hằng (GVHD)', msg: 'Chúc em vững vàng và rực rỡ trên chặng đường phía trước!', emoji: '🌷', ts: Date.now() - 5400000 },
+        { name: 'Nhóm CNTT K21', msg: 'Ra trường rồi nhớ tụi mình nha Diễm ơi, tự hào về cậu lắm!', emoji: '🎓', ts: Date.now() - 9000000 },
+      ] });
+    }
+    this._tick = setInterval(() => {
+      const c = this._cd();
+      if (this._dRef) this._dRef.textContent = c.d;
+      if (this._hRef) this._hRef.textContent = c.h;
+      if (this._mRef) this._mRef.textContent = c.m;
+      if (this._sRef) this._sRef.textContent = c.s;
+    }, 1000);
+    if (this.props.confettiOnLoad !== false) {
+      setTimeout(() => this.launchConfetti(150), 450);
+    }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this._tick);
+    if (this._raf) cancelAnimationFrame(this._raf);
+    if (this._audio) { try { clearInterval(this._audio.timer); this._audio.ctx.close(); } catch (e) {} }
+    if (this._resize) window.removeEventListener('resize', this._resize);
+  }
+
+  /* ---------- hero entrance (JS-driven; CSS keyframes don't schedule here) ---------- */
+  heroRef = (el) => { this._heroRef = el; };
+  capRef = (el) => { this._capRef = el; };
+  _animateIn() {
+    const hero = this._heroRef, cap = this._capRef;
+    const easeOut = t => 1 - Math.pow(1 - t, 3);
+    const easeBack = t => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
+    if (hero) { hero.style.opacity = '0'; hero.style.transform = 'translateY(18px)'; }
+    if (cap) { cap.style.transform = 'translateY(-115vh) rotate(-32deg)'; }
+    const start = performance.now();
+    const step = now => {
+      const t1 = Math.min(1, (now - start) / 800);
+      const t2 = Math.min(1, (now - start) / 1100);
+      if (hero) { hero.style.opacity = String(easeOut(t1)); hero.style.transform = 'translateY(' + (18 * (1 - easeOut(t1))) + 'px)'; }
+      if (cap) { const b = easeBack(t2); cap.style.transform = 'translateY(' + (-115 * (1 - b)) + 'vh) rotate(' + (-32 * (1 - t2)) + 'deg)'; }
+      if (t1 < 1 || t2 < 1) requestAnimationFrame(step);
+      else { if (hero) hero.style.transform = 'none'; if (cap) cap.style.transform = 'none'; }
+    };
+    requestAnimationFrame(step);
+  }
+
+  /* ---------- countdown ---------- */
+  _cd() {
+    const iso = this.props.eventISO || '2026-07-20T09:00';
+    const total = Math.max(0, Math.floor((new Date(iso).getTime() - Date.now()) / 1000));
+    const pad = n => String(n).padStart(2, '0');
+    return {
+      d: String(Math.floor(total / 86400)),
+      h: pad(Math.floor((total % 86400) / 3600)),
+      m: pad(Math.floor((total % 3600) / 60)),
+      s: pad(total % 60),
+    };
+  }
+
+  /* ---------- confetti ---------- */
+  canvasRef = (el) => { this._canvas = el; };
+  launchConfetti(n) {
+    const cv = this._canvas; if (!cv) return;
+    const ctx = cv.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const resize = () => { cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    resize();
+    if (!this._resize) { this._resize = resize; window.addEventListener('resize', resize); }
+    const colors = ['#F3C6CE', '#E59FAC', '#D9CDEA', '#B9A5D6', '#CBE7D8', '#F3D7A8', '#C9A05B', '#FFFFFF'];
+    this._parts = this._parts || [];
+    for (let i = 0; i < n; i++) {
+      this._parts.push({
+        x: Math.random() * innerWidth,
+        y: -20 - Math.random() * innerHeight * 0.5,
+        w: 6 + Math.random() * 8, h: 8 + Math.random() * 10,
+        vx: -2.2 + Math.random() * 4.4, vy: 2 + Math.random() * 3.5,
+        rot: Math.random() * Math.PI, vr: -0.22 + Math.random() * 0.44,
+        color: colors[(Math.random() * colors.length) | 0],
+        shape: Math.random() < 0.42 ? 'circle' : 'rect',
+      });
+    }
+    if (!this._running) { this._running = true; this._loop(); }
+  }
+  _loop = () => {
+    const cv = this._canvas; if (!cv) { this._running = false; return; }
+    const ctx = cv.getContext('2d');
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    const ps = this._parts;
+    for (let i = ps.length - 1; i >= 0; i--) {
+      const p = ps[i];
+      p.x += p.vx; p.y += p.vy; p.vy += 0.045; p.rot += p.vr;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.color; ctx.globalAlpha = 0.92;
+      if (p.shape === 'circle') { ctx.beginPath(); ctx.arc(0, 0, p.w / 2, 0, 7); ctx.fill(); }
+      else ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+      if (p.y > innerHeight + 50) ps.splice(i, 1);
+    }
+    if (ps.length > 0) { this._raf = requestAnimationFrame(this._loop); }
+    else { this._running = false; ctx.clearRect(0, 0, innerWidth, innerHeight); }
+  };
+
+  /* ---------- music (generated ambient) ---------- */
+  toggleMusic() {
+    if (!this._audio) this.setupAudio();
+    const a = this._audio;
+    if (this.state.musicOn) { a.ctx.suspend(); this.setState({ musicOn: false }); }
+    else { a.ctx.resume(); this.setState({ musicOn: true }); }
+  }
+  setupAudio() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AC();
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0.0001, ctx.currentTime);
+    master.gain.linearRampToValueAtTime(0.16, ctx.currentTime + 1.4);
+    master.connect(ctx.destination);
+    const scale = [392.0, 440.0, 523.25, 587.33, 659.25, 783.99, 880.0];
+    const timer = setInterval(() => {
+      if (ctx.state !== 'running') return;
+      const f = scale[(Math.random() * scale.length) | 0];
+      this.playNote(f, ctx, master, 0.5);
+      if (Math.random() < 0.35) this.playNote(f / 2, ctx, master, 0.12);
+    }, 540);
+    this._audio = { ctx, master, timer };
+  }
+  playNote(f, ctx, master, peak) {
+    const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = f;
+    const o2 = ctx.createOscillator(); o2.type = 'sine'; o2.frequency.value = f * 2;
+    const g = ctx.createGain(); const t = ctx.currentTime;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(peak, t + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.0008, t + 1.9);
+    o.connect(g); o2.connect(g); g.connect(master);
+    o.start(t); o2.start(t); o.stop(t + 2.0); o2.stop(t + 2.0);
+  }
+
+  /* ---------- flipbook ---------- */
+  nextPage() { this.setState(s => ({ page: Math.min(s.page + 1, 4) })); }
+  prevPage() { this.setState(s => ({ page: Math.max(s.page - 1, 0) })); }
+
+  /* ---------- guestbook ---------- */
+  addGuest() {
+    const name = this.state.gName.trim();
+    const msg = this.state.gMsg.trim();
+    if (!name || !msg) return;
+    const guests = [{ name, msg, emoji: this.state.gEmoji, ts: Date.now() }, ...this.state.guests];
+    this.setState({ guests, gName: '', gMsg: '', gEmoji: '💖' });
+    try { localStorage.setItem('grad_guestbook', JSON.stringify(guests)); } catch (e) {}
+    this.launchConfetti(45);
+  }
+
+  /* ---------- rsvp ---------- */
+  submitRSVP() {
+    const name = this.state.rName.trim();
+    if (!name || !this.state.rAttend) return;
+    try {
+      const arr = JSON.parse(localStorage.getItem('grad_rsvp') || '[]');
+      arr.push({ name, attend: this.state.rAttend, msg: this.state.rMsg, ts: Date.now() });
+      localStorage.setItem('grad_rsvp', JSON.stringify(arr));
+    } catch (e) {}
+    this.setState({ rDone: true });
+    if (this.state.rAttend === 'yes') this.launchConfetti(90);
+  }
+
+  renderVals() {
+    /* countdown (initial paint; live updates via refs in the 1s tick) */
+    const pad = n => String(n).padStart(2, '0');
+    const c = this._cd();
+    const cdDays = c.d, cdHours = c.h, cdMins = c.m, cdSecs = c.s;
+
+
+    /* album */
+    const album = [
+      { slot: 'al1', cap: 'Ngày khai giảng' },
+      { slot: 'al2', cap: 'Hội bạn thân' },
+      { slot: 'al3', cap: 'Góc thư viện' },
+      { slot: 'al4', cap: 'Mùa đồ án' },
+      { slot: 'al5', cap: 'Ngày ra trường' },
+    ];
+
+    /* flipbook */
+    const N = 4; const page = this.state.page;
+    const leaf = (i, front, back) => ({ front, back, tf: i < page ? 'rotateY(-179deg)' : 'rotateY(0deg)', z: i < page ? i : N - i });
+    const leaves = [
+      leaf(0, { cover: true }, { slot: 'yb1', cap: 'Tân sinh viên · 2021' }),
+      leaf(1, { slot: 'yb2', cap: 'Những người bạn thân' }, { slot: 'yb3', cap: 'Đêm trắng đồ án' }),
+      leaf(2, { slot: 'yb4', cap: 'Ngày bảo vệ' }, { slot: 'yb5', cap: 'Khoảnh khắc tốt nghiệp' }),
+      leaf(3, { slot: 'yb6', cap: 'Một thời để nhớ' }, { endcover: true }),
+    ];
+    const pageLabel = page + ' / ' + N;
+
+    /* friends */
+    const friends = [
+      { name: 'Minh', place: 'Hà Nội', msg: 'Tự hào về cậu! Chặng đường mới rực rỡ nhé.', emoji: '🌟' },
+      { name: 'Hương', place: 'Đà Nẵng', msg: 'Cố lên nha bạn hiền, tụi mình luôn bên cậu!', emoji: '🌸' },
+      { name: 'Lan', place: 'TP.HCM', msg: 'Chúc mừng nhé! Mong em luôn hạnh phúc và thành công.', emoji: '💖' },
+      { name: 'Quốc', place: 'Singapore', msg: 'Congrats from afar! Tự hào về Diễm lắm đó.', emoji: '🎉' },
+    ];
+    const af = friends[this.state.activeFriend] || friends[2];
+
+    /* guestbook */
+    const fmt = ts => { const d = new Date(ts); return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + ' · ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+    const guests = this.state.guests.map(g => ({ name: g.name, msg: g.msg, emoji: g.emoji, when: fmt(g.ts) }));
+    const emojiList = ['💖', '🎓', '🌷', '🎉', '🥰', '👏', '🌟', '🙌'];
+    const gEmojis = emojiList.map(em => ({
+      em,
+      pick: () => this.setState({ gEmoji: em }),
+      bg: em === this.state.gEmoji ? '#FBEAEE' : 'rgba(251,244,239,.08)',
+      ring: em === this.state.gEmoji ? '2px solid #E59FAC' : '2px solid transparent',
+    }));
+
+    /* rsvp options */
+    const mkOpt = (key, label) => {
+      const on = this.state.rAttend === key;
+      return {
+        key, label,
+        pick: () => this.setState({ rAttend: key }),
+        bg: on ? (key === 'yes' ? '#E59FAC' : '#D9CDEA') : '#FBF4EF',
+        color: on ? '#FFFCFA' : '#6B5560',
+        border: on ? '1px solid transparent' : '1px solid rgba(201,160,91,.4)',
+      };
+    };
+    const rsvpOpts = [mkOpt('yes', 'Có, em sẽ đến 🎉'), mkOpt('no', 'Tiếc quá, không đến được')];
+    const yes = this.state.rAttend === 'yes';
+    const rsvpIcon = yes ? '🎉' : '💛';
+    const rsvpTitle = yes ? 'Hẹn gặp bạn nhé!' : 'Cảm ơn bạn rất nhiều!';
+    const rsvpSub = yes
+      ? 'Diễm rất vui khi có bạn cùng chia sẻ ngày đặc biệt này.'
+      : 'Dù không đến được, lời chúc của bạn vẫn rất ý nghĩa với Diễm.';
+
+    return {
+      cdDays, cdHours, cdMins, cdSecs,
+      heroRef: this.heroRef, capRef: this.capRef,
+      dRef: el => { this._dRef = el; },
+      hRef: el => { this._hRef = el; },
+      mRef: el => { this._mRef = el; },
+      sRef: el => { this._sRef = el; },
+      album, leaves, pageLabel,
+      nextPage: () => this.nextPage(), prevPage: () => this.prevPage(),
+      showFriendMap: this.props.showFriendMap !== false,
+      af,
+      pickFriend0: () => this.setState({ activeFriend: 0 }),
+      pickFriend1: () => this.setState({ activeFriend: 1 }),
+      pickFriend2: () => this.setState({ activeFriend: 2 }),
+      pickFriend3: () => this.setState({ activeFriend: 3 }),
+      guests, gEmojis,
+      gName: this.state.gName, gMsg: this.state.gMsg,
+      onGName: e => this.setState({ gName: e.target.value }),
+      onGMsg: e => this.setState({ gMsg: e.target.value }),
+      addGuest: () => this.addGuest(),
+      rName: this.state.rName, rMsg: this.state.rMsg,
+      onRName: e => this.setState({ rName: e.target.value }),
+      onRMsg: e => this.setState({ rMsg: e.target.value }),
+      rsvpOpts, submitRSVP: () => this.submitRSVP(),
+      rDone: this.state.rDone, rFormOpen: !this.state.rDone,
+      rsvpIcon, rsvpTitle, rsvpSub,
+      replay: () => this.launchConfetti(160),
+      toggleMusic: () => this.toggleMusic(),
+      musicLabel: this.state.musicOn ? '🔊 Đang phát nhạc' : '🔇 Bật nhạc nền',
+      canvasRef: this.canvasRef,
+    };
+  }
+}
+</script>
+</body>
+</html>

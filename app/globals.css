@@ -1,0 +1,102 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #fbf4ef;
+}
+
+@keyframes floatA {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(26px, -32px) scale(1.06);
+  }
+}
+
+@keyframes floatB {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-30px, 24px) scale(1.08);
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(9px);
+  }
+}
+
+.invitation-root {
+  position: relative;
+  font-family: "Be Vietnam Pro", sans-serif;
+  color: #4f3b47;
+  background: #fbf4ef;
+  overflow-x: hidden;
+}
+
+.invitation-root image-slot,
+.invitation-root .image-slot {
+  --slot-bg: #f3e9e2;
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 28px;
+  align-items: stretch;
+}
+
+.guest-grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 34px;
+  align-items: start;
+}
+
+.friend-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 34px;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .event-grid,
+  .guest-grid,
+  .friend-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.btn-hover:hover {
+  transform: translateY(-2px);
+}
+
+.btn-hover-lg:hover {
+  transform: translateY(-3px);
+}
