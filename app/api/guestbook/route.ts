@@ -3,6 +3,7 @@ import { STORAGE_HELP, formatStorageError } from "@/lib/persist";
 import { appendGuestbook, listGuestbook } from "@/lib/guestbook-store";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function GET() {
   try {

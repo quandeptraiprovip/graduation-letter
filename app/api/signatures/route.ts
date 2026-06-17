@@ -3,6 +3,7 @@ import { STORAGE_HELP, formatStorageError } from "@/lib/persist";
 import { appendSignature, listSignatures } from "@/lib/signature-store";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function GET() {
   try {

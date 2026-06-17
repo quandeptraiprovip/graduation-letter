@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { readSignaturePng } from "@/lib/signature-store";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 type Params = { params: Promise<{ name: string }> };
 

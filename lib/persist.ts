@@ -7,12 +7,12 @@ import {
   githubWriteText,
 } from "./github-contents";
 
-/** Lưu qua GitHub Contents API (bắt buộc để ghi khi deploy Vercel). */
-export function githubPersistenceEnabled(): boolean {
-  return Boolean(
-    process.env.GITHUB_TOKEN?.trim() && process.env.GITHUB_REPO?.trim()
-  );
-}
+import {
+  getGitHubConfigDiagnostic,
+  githubPersistenceEnabled,
+} from "./github-config";
+
+export { githubPersistenceEnabled, getGitHubConfigDiagnostic };
 
 export function isVercelDeploy(): boolean {
   return (
@@ -31,7 +31,16 @@ export function isReadOnlyServerFilesystem(): boolean {
 }
 
 export const STORAGE_HELP =
-  "Chưa lưu được: trên Vercel phải cấu hình GITHUB_TOKEN và GITHUB_REPO trong Project → Settings → Environment Variables (Production), rồi Redeploy. File .env.local trên máy không được đưa lên Vercel.";
+  "Server chưa thấy GITHUB_TOKEN / GITHUB_REPO. Trên Vercel: Settings → Environment Variables → tick Production → Redeploy (không dùng .env.local). Mở /api/health/storage để xem thiếu biến nào.";
+
+export function storageHelpFromDiagnostic(): string {
+  const d = getGitHubConfigDiagnostic();
+  if (d.ok) return STORAGE_HELP;
+  if (d.missing.length) {
+    return `Thiếu hoặc sai: ${d.missing.join(", ")}. ${STORAGE_HELP}`;
+  }
+  return STORAGE_HELP;
+}
 
 export function formatStorageError(e: unknown, fallback: string): string {
   const raw = e instanceof Error ? e.message : fallback;
@@ -46,7 +55,7 @@ export function formatStorageError(e: unknown, fallback: string): string {
 
 export function assertCanWriteToDisk(): void {
   if (isReadOnlyServerFilesystem() && !githubPersistenceEnabled()) {
-    throw new Error(STORAGE_HELP);
+    throw new Error(storageHelpFromDiagnostic());
   }
 }
 

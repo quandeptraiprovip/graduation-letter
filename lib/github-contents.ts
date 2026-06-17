@@ -1,16 +1,16 @@
-const BRANCH = () => process.env.GITHUB_BRANCH || "main";
+import { getGitHubBranch, getGitHubConfig } from "./github-config";
 
-function repoParts() {
-  const raw = process.env.GITHUB_REPO?.trim();
-  if (!raw) throw new Error("GITHUB_REPO not set");
-  const [owner, repo] = raw.split("/");
-  if (!owner || !repo) throw new Error("GITHUB_REPO invalid");
-  return { owner, repo };
+function requireConfig() {
+  const cfg = getGitHubConfig();
+  if (!cfg) {
+    throw new Error(
+      "GITHUB_TOKEN hoặc GITHUB_REPO chưa hợp lệ trên server. Kiểm tra /api/health/storage trên Vercel."
+    );
+  }
+  return cfg;
 }
 
-function headers() {
-  const token = process.env.GITHUB_TOKEN?.trim();
-  if (!token) throw new Error("GITHUB_TOKEN not set");
+function headers(token: string) {
   return {
     Authorization: `Bearer ${token}`,
     Accept: "application/vnd.github+json",
@@ -22,18 +22,11 @@ function decodeBase64Content(content: string): Buffer {
   return Buffer.from(content.replace(/\s/g, ""), "base64");
 }
 
-/** @deprecated use githubPersistenceEnabled from ./persist */
-export function isGitHubStorageEnabled(): boolean {
-  return Boolean(
-    process.env.GITHUB_TOKEN?.trim() && process.env.GITHUB_REPO?.trim()
-  );
-}
-
 export async function githubReadText(repoPath: string): Promise<string | null> {
-  const { owner, repo } = repoParts();
+  const { token, owner, repo, branch } = requireConfig();
   const res = await fetch(
-    `https://api.github.com/repos/${owner}/${repo}/contents/${repoPath}?ref=${BRANCH()}`,
-    { headers: headers(), cache: "no-store" }
+    `https://api.github.com/repos/${owner}/${repo}/contents/${repoPath}?ref=${branch}`,
+    { headers: headers(token), cache: "no-store" }
   );
   if (res.status === 404) return null;
   if (!res.ok) {
@@ -45,10 +38,10 @@ export async function githubReadText(repoPath: string): Promise<string | null> {
 }
 
 export async function githubReadBinary(repoPath: string): Promise<Buffer | null> {
-  const { owner, repo } = repoParts();
+  const { token, owner, repo, branch } = requireConfig();
   const res = await fetch(
-    `https://api.github.com/repos/${owner}/${repo}/contents/${repoPath}?ref=${BRANCH()}`,
-    { headers: headers(), cache: "no-store" }
+    `https://api.github.com/repos/${owner}/${repo}/contents/${repoPath}?ref=${branch}`,
+    { headers: headers(token), cache: "no-store" }
   );
   if (res.status === 404) return null;
   if (!res.ok) throw new Error(`GitHub read ${repoPath}: ${res.status}`);
@@ -61,10 +54,10 @@ export async function githubWriteBinary(
   data: Buffer,
   message: string
 ): Promise<void> {
-  const { owner, repo } = repoParts();
+  const { token, owner, repo, branch } = requireConfig();
   const head = await fetch(
-    `https://api.github.com/repos/${owner}/${repo}/contents/${repoPath}?ref=${BRANCH()}`,
-    { headers: headers(), cache: "no-store" }
+    `https://api.github.com/repos/${owner}/${repo}/contents/${repoPath}?ref=${branch}`,
+    { headers: headers(token), cache: "no-store" }
   );
   let sha: string | undefined;
   if (head.ok) {
@@ -75,11 +68,11 @@ export async function githubWriteBinary(
     `https://api.github.com/repos/${owner}/${repo}/contents/${repoPath}`,
     {
       method: "PUT",
-      headers: { ...headers(), "Content-Type": "application/json" },
+      headers: { ...headers(token), "Content-Type": "application/json" },
       body: JSON.stringify({
         message,
         content: data.toString("base64"),
-        branch: BRANCH(),
+        branch,
         ...(sha ? { sha } : {}),
       }),
     }

@@ -3,6 +3,7 @@ import { STORAGE_HELP, formatStorageError } from "@/lib/persist";
 import { appendRsvp } from "@/lib/rsvp-store";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {

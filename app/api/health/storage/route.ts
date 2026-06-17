@@ -1,21 +1,29 @@
 import { NextResponse } from "next/server";
-import { STORAGE_HELP, githubPersistenceEnabled, isReadOnlyServerFilesystem, isVercelDeploy } from "@/lib/persist";
+import {
+  STORAGE_HELP,
+  githubPersistenceEnabled,
+  isReadOnlyServerFilesystem,
+  isVercelDeploy,
+} from "@/lib/persist";
+import { getGitHubConfigDiagnostic } from "@/lib/github-config";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
-/** Kiểm tra nhanh cấu hình lưu trữ (không lộ token). */
+/** Kiểm tra cấu hình lưu trữ trên server (không lộ token). */
 export async function GET() {
+  const gh = getGitHubConfigDiagnostic();
   const github = githubPersistenceEnabled();
-  const vercel = isVercelDeploy();
   const readOnly = isReadOnlyServerFilesystem();
   const ok = !readOnly || github;
+
   return NextResponse.json({
     ok,
-    vercel,
+    vercel: isVercelDeploy(),
+    vercelEnv: process.env.VERCEL_ENV ?? null,
     readOnlyFs: readOnly,
-    hasGitHubToken: Boolean(process.env.GITHUB_TOKEN?.trim()),
-    hasGitHubRepo: Boolean(process.env.GITHUB_REPO?.trim()),
     persistence: github ? "github" : readOnly ? "none" : "local-files",
-    hint: ok ? null : STORAGE_HELP,
+    github: gh,
+    hint: ok ? null : gh.missing.length ? `Thiếu: ${gh.missing.join(", ")}` : STORAGE_HELP,
   });
 }
