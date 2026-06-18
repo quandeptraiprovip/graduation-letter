@@ -16,10 +16,12 @@ export type SignaturePadHandle = {
 
 type Props = {
   height?: number;
+  /** Khi true, nền canvas trong suốt (để chữ ký phủ lên ảnh). Mặc định nền kem. */
+  transparent?: boolean;
 };
 
 export const SignaturePad = forwardRef<SignaturePadHandle, Props>(
-  function SignaturePad({ height = 220 }, ref) {
+  function SignaturePad({ height = 220, transparent = false }, ref) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const drawing = useRef(false);
     const hasInk = useRef(false);
@@ -34,14 +36,17 @@ export const SignaturePad = forwardRef<SignaturePadHandle, Props>(
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.fillStyle = "#FFFCFA";
-      ctx.fillRect(0, 0, rect.width, height);
+      ctx.clearRect(0, 0, rect.width, height);
+      if (!transparent) {
+        ctx.fillStyle = "#FFFCFA";
+        ctx.fillRect(0, 0, rect.width, height);
+      }
       ctx.strokeStyle = "#4F3B47";
       ctx.lineWidth = 2.4;
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
       hasInk.current = false;
-    }, [height]);
+    }, [height, transparent]);
 
     useEffect(() => {
       resize();

@@ -1,8 +1,9 @@
 import Link from "next/link";
 
-export function SignaturePromoSection() {
+export function LuuButPromoSection() {
   return (
     <section
+      id="luu-but-promo"
       style={{
         padding: "84px 24px",
         background: "linear-gradient(180deg,#FCEFF2 0%,#EDF3EE 55%,#FBF4EF 100%)",
@@ -25,12 +26,7 @@ export function SignaturePromoSection() {
         }}
       />
       <div
-        style={{
-          maxWidth: 920,
-          margin: "0 auto",
-          position: "relative",
-          zIndex: 1,
-        }}
+        style={{ maxWidth: 920, margin: "0 auto", position: "relative", zIndex: 1 }}
       >
         <div style={{ textAlign: "center", marginBottom: 36 }}>
           <div
@@ -53,19 +49,19 @@ export function SignaturePromoSection() {
               margin: "10px 0 0",
             }}
           >
-            Để lại chữ ký của bạn
+            Lưu bút &amp; ký tên
           </h2>
           <p
             style={{
               color: "#7A6470",
               fontSize: 15,
               margin: "14px auto 0",
-              maxWidth: 520,
+              maxWidth: 540,
               lineHeight: 1.55,
             }}
           >
-            Một trang riêng để bạn ký tên bằng tay (chuột hoặc cảm ứng). Diễm sẽ
-            gom tất cả chữ ký thành kỷ niệm ngày tốt nghiệp.
+            Một trang riêng để bạn để lại lời chúc và ký tên lưu niệm. Diễm sẽ gom
+            tất cả thành kỷ niệm ngày tốt nghiệp.
           </p>
         </div>
 
@@ -86,7 +82,7 @@ export function SignaturePromoSection() {
               boxShadow: "0 16px 40px rgba(79,59,71,.1)",
             }}
           >
-            <div style={{ fontSize: 36, marginBottom: 12 }}>✍️</div>
+            <div style={{ fontSize: 36, marginBottom: 12 }}>💌</div>
             <h3
               style={{
                 fontFamily: "'Playfair Display', serif",
@@ -95,7 +91,7 @@ export function SignaturePromoSection() {
                 margin: "0 0 10px",
               }}
             >
-              Ba bước đơn giản
+              Hai điều dễ thương
             </h3>
             <ol
               style={{
@@ -106,8 +102,8 @@ export function SignaturePromoSection() {
                 lineHeight: 1.65,
               }}
             >
-              <li>Mở trang chữ ký</li>
-              <li>Viết tên và ký vào khung trắng</li>
+              <li>Viết một lời chúc — ghim lên quả địa cầu</li>
+              <li>Ký tên lưu niệm bằng tay</li>
               <li>Bấm gửi — xong!</li>
             </ol>
           </div>
@@ -137,10 +133,10 @@ export function SignaturePromoSection() {
                 color: "#F3D7A8",
               }}
             >
-              “Ký tên ở đây để Diễm nhớ mãi ngày có bạn bên cạnh.”
+              “Để lại đôi dòng và chữ ký để Diễm nhớ mãi ngày có bạn bên cạnh.”
             </p>
             <Link
-              href="/chu-ky"
+              href="/luu-but"
               className="btn-hover-lg"
               style={{
                 display: "inline-flex",
@@ -157,7 +153,7 @@ export function SignaturePromoSection() {
                 transition: "transform .2s",
               }}
             >
-              Đến trang chữ ký →
+              Lưu bút &amp; ký tên →
             </Link>
             <span style={{ fontSize: 12, color: "#D9C3CD", letterSpacing: ".08em" }}>
               Miễn phí · không cần tài khoản

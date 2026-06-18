@@ -1,13 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ImageSlot } from "@/components/ImageSlot";
-import { SignaturePromoSection } from "@/components/SignaturePromoSection";
-import { FloatingWishes } from "@/components/FloatingWishes";
+import { LuuButPromoSection } from "@/components/LuuButPromoSection";
 import type { GlobeWishPoint } from "@/components/WishGlobe";
-import { EVENT_ISO, EVENT_GEO, IMAGES, SHOW_FRIEND_MAP } from "@/lib/config";
-import { captureWishLocation } from "@/lib/capture-wish-location";
+import { EVENT_ISO, EVENT_GEO, IMAGES } from "@/lib/config";
 import type { GuestEntry } from "@/lib/guestbook-store";
 import { useAmbientMusic } from "@/hooks/useAmbientMusic";
 import { useConfetti } from "@/hooks/useConfetti";
@@ -25,37 +24,6 @@ const WishGlobe = dynamic(
   }
 );
 
-type DisplayGuest = {
-  name: string;
-  msg: string;
-  emoji: string;
-  when: string;
-  lat?: number;
-  lng?: number;
-  place?: string;
-  timestamp: string;
-};
-
-function formatWhen(ts: string) {
-  const d = new Date(ts);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)} · ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-}
-
-function toDisplay(entries: GuestEntry[]): DisplayGuest[] {
-  return entries.map((g) => ({
-    name: g.name,
-    msg: g.message,
-    emoji: g.emoji,
-    when: formatWhen(g.timestamp),
-    timestamp: g.timestamp,
-    ...(g.lat !== undefined && g.lng !== undefined
-      ? { lat: g.lat, lng: g.lng }
-      : {}),
-    ...(g.place ? { place: g.place } : {}),
-  }));
-}
-
 const ALBUM = [
   { key: "al1" as const, cap: "Ngày khai giảng" },
   { key: "al2" as const, cap: "Hội bạn thân" },
@@ -64,40 +32,7 @@ const ALBUM = [
   { key: "al5" as const, cap: "Ngày ra trường" },
 ];
 
-const FRIENDS = [
-  {
-    name: "Minh",
-    place: "Hà Nội",
-    msg: "Tự hào về cậu! Chặng đường mới rực rỡ nhé.",
-    emoji: "🌟",
-  },
-  {
-    name: "Hương",
-    place: "Đà Nẵng",
-    msg: "Cố lên nha bạn hiền, tụi mình luôn bên cậu!",
-    emoji: "🌸",
-  },
-  {
-    name: "Lan",
-    place: "TP.HCM",
-    msg: "Chúc mừng nhé! Mong em luôn hạnh phúc và thành công.",
-    emoji: "💖",
-  },
-  {
-    name: "Quốc",
-    place: "Singapore",
-    msg: "Congrats from afar! Tự hào về Diễm lắm đó.",
-    emoji: "🎉",
-  },
-];
-
-const EMOJI_LIST = ["💖", "🎓", "🌷", "🎉", "🥰", "👏", "🌟", "🙌"];
-
-type Props = {
-  initialGuests: GuestEntry[];
-};
-
-export function InvitationPage({ initialGuests }: Props) {
+export function InvitationPage() {
   const cd = useCountdown(EVENT_ISO);
   const { canvasRef, launch } = useConfetti();
   const { toggle, label: musicLabel } = useAmbientMusic();
@@ -106,42 +41,37 @@ export function InvitationPage({ initialGuests }: Props) {
   const capRef = useRef<HTMLDivElement>(null);
 
   const [page, setPage] = useState(0);
-  const [activeFriend, setActiveFriend] = useState(2);
-  const [guests, setGuests] = useState<DisplayGuest[]>(() =>
-    toDisplay(initialGuests)
-  );
-  const [gName, setGName] = useState("");
-  const [gMsg, setGMsg] = useState("");
-  const [gEmoji, setGEmoji] = useState("💖");
-  const [guestSubmitting, setGuestSubmitting] = useState(false);
-  const [guestError, setGuestError] = useState<string | null>(null);
-  const [shareWishLocation, setShareWishLocation] = useState(true);
-  const [locationHint, setLocationHint] = useState<string | null>(null);
-
+  const [globePoints, setGlobePoints] = useState<GlobeWishPoint[]>([]);
   const [rName, setRName] = useState("");
   const [rAttend, setRAttend] = useState<"" | "yes" | "no">("");
   const [rMsg, setRMsg] = useState("");
   const [rDone, setRDone] = useState(false);
   const [rsvpSubmitting, setRsvpSubmitting] = useState(false);
 
-  const af = FRIENDS[activeFriend] ?? FRIENDS[2];
-
-  const globePoints = useMemo((): GlobeWishPoint[] => {
-    return guests
-      .filter(
-        (g): g is DisplayGuest & { lat: number; lng: number } =>
-          g.lat !== undefined && g.lng !== undefined
-      )
-      .map((g) => ({
-        id: `${g.timestamp}-${g.name}`,
-        lat: g.lat,
-        lng: g.lng,
-        name: g.name,
-        emoji: g.emoji,
-        msg: g.msg,
-        place: g.place,
-      }));
-  }, [guests]);
+  useEffect(() => {
+    fetch("/api/guestbook", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        const entries = (data?.entries ?? []) as GuestEntry[];
+        setGlobePoints(
+          entries
+            .filter(
+              (g): g is GuestEntry & { lat: number; lng: number } =>
+                g.lat !== undefined && g.lng !== undefined
+            )
+            .map((g) => ({
+              id: `${g.timestamp}-${g.name}`,
+              lat: g.lat,
+              lng: g.lng,
+              name: g.name,
+              emoji: g.emoji,
+              msg: g.message,
+              place: g.place,
+            }))
+        );
+      })
+      .catch(() => {});
+  }, []);
 
   const leaves = useMemo(() => {
     const N = 4;
@@ -211,80 +141,6 @@ export function InvitationPage({ initialGuests }: Props) {
     const t = setTimeout(() => launch(150), 450);
     return () => clearTimeout(t);
   }, [launch]);
-
-  useEffect(() => {
-    fetch("/api/guestbook", { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data?.entries?.length) {
-          setGuests(toDisplay(data.entries as GuestEntry[]));
-        }
-      })
-      .catch(() => {});
-  }, []);
-
-  const addGuest = useCallback(async () => {
-    const name = gName.trim();
-    const msg = gMsg.trim();
-    if (!name || !msg) return;
-    setGuestSubmitting(true);
-    setGuestError(null);
-    setLocationHint(null);
-    try {
-      let lat: number | undefined;
-      let lng: number | undefined;
-      let place: string | undefined;
-      if (shareWishLocation) {
-        const loc = await captureWishLocation();
-        if (loc) {
-          lat = loc.lat;
-          lng = loc.lng;
-          place = loc.place || undefined;
-        } else {
-          setLocationHint(
-            "Không lấy được vị trí (bạn có thể từ chối quyền). Lời chúc vẫn được gửi."
-          );
-        }
-      }
-      const res = await fetch("/api/guestbook", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          message: msg,
-          emoji: gEmoji,
-          lat,
-          lng,
-          place,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Gửi thất bại");
-      const entry = data.entry as GuestEntry;
-      setGuests((prev) => [
-        {
-          name: entry.name,
-          msg: entry.message,
-          emoji: entry.emoji,
-          when: formatWhen(entry.timestamp),
-          timestamp: entry.timestamp,
-          ...(entry.lat !== undefined && entry.lng !== undefined
-            ? { lat: entry.lat, lng: entry.lng }
-            : {}),
-          ...(entry.place ? { place: entry.place } : {}),
-        },
-        ...prev,
-      ]);
-      setGName("");
-      setGMsg("");
-      setGEmoji("💖");
-      launch(45);
-    } catch (e) {
-      setGuestError(e instanceof Error ? e.message : "Không gửi được lời chúc");
-    } finally {
-      setGuestSubmitting(false);
-    }
-  }, [gEmoji, gMsg, gName, launch, shareWishLocation]);
 
   const submitRSVP = useCallback(async () => {
     const name = rName.trim();
@@ -633,7 +489,7 @@ export function InvitationPage({ initialGuests }: Props) {
               style={{
                 fontFamily: "'Playfair Display', serif",
                 fontWeight: 600,
-                fontSize: 42,
+                fontSize: "clamp(28px, 5.2vw, 42px)",
                 color: "#4F3B47",
                 margin: "10px 0 0",
               }}
@@ -836,7 +692,7 @@ export function InvitationPage({ initialGuests }: Props) {
             style={{
               fontFamily: "'Playfair Display', serif",
               fontWeight: 600,
-              fontSize: 42,
+              fontSize: "clamp(28px, 5.2vw, 42px)",
               color: "#4F3B47",
               margin: "10px 0 0",
             }}
@@ -916,7 +772,7 @@ export function InvitationPage({ initialGuests }: Props) {
             style={{
               fontFamily: "'Playfair Display', serif",
               fontWeight: 600,
-              fontSize: 42,
+              fontSize: "clamp(28px, 5.2vw, 42px)",
               color: "#4F3B47",
               margin: "10px 0 0",
             }}
@@ -1146,369 +1002,81 @@ export function InvitationPage({ initialGuests }: Props) {
         </div>
       </section>
 
-      {SHOW_FRIEND_MAP && (
-        <section
-          style={{
-            padding: "84px 24px",
-            background: "linear-gradient(180deg,#EDF3EE,#FBF4EF)",
-          }}
-        >
-          <div style={{ textAlign: "center", margin: "0 auto 46px", maxWidth: 620 }}>
-            <div
-              style={{
-                letterSpacing: ".32em",
-                fontSize: 12,
-                fontWeight: 600,
-                color: "#C9A05B",
-                textTransform: "uppercase",
-              }}
-            >
-              Bản đồ bạn bè
-            </div>
-            <h2
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontWeight: 600,
-                fontSize: 42,
-                color: "#4F3B47",
-                margin: "10px 0 0",
-              }}
-            >
-              Lời chúc từ khắp nơi
-            </h2>
-          </div>
-          <div className="friend-grid" style={{ maxWidth: 880, margin: "0 auto" }}>
-            <div
-              style={{
-                position: "relative",
-                height: 440,
-                borderRadius: 24,
-                background:
-                  "radial-gradient(80% 60% at 55% 40%, rgba(203,231,216,.5), rgba(217,205,234,.35))",
-                border: "1px solid rgba(201,160,91,.25)",
-                boxShadow: "0 16px 40px rgba(79,59,71,.1)",
-                overflow: "hidden",
-              }}
-            >
-              {(
-                [
-                  [0, "13%", "50%", "Hà Nội", "#E59FAC", 16],
-                  [1, "46%", "62%", "Đà Nẵng", "#C9A05B", 16],
-                  [2, "79%", "40%", "TP.HCM", "#B9A5D6", 18],
-                  [3, "90%", "80%", "Hải ngoại", "#7FB7E0", 14],
-                ] as const
-              ).map(([idx, top, left, label, color, size]) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setActiveFriend(idx)}
-                  style={{
-                    position: "absolute",
-                    top,
-                    left,
-                    transform: "translateX(-50%)",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: 5,
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  <span
-                    style={{
-                      width: size,
-                      height: size,
-                      borderRadius: "50%",
-                      background: color,
-                      border: "3px solid #FFFCFA",
-                      boxShadow: "0 4px 12px rgba(79,59,71,.25)",
-                    }}
-                  />
-                  <span
-                    style={{
-                      fontSize: 12,
-                      fontWeight: 600,
-                      color: "#4F3B47",
-                      background: "#FFFCFAcc",
-                      padding: "3px 9px",
-                      borderRadius: 999,
-                    }}
-                  >
-                    {label}
-                  </span>
-                </button>
-              ))}
-            </div>
-            <div
-              style={{
-                background: "#FFFCFA",
-                borderRadius: 22,
-                padding: "36px 32px",
-                boxShadow: "0 16px 40px rgba(79,59,71,.1)",
-                border: "1px solid rgba(201,160,91,.25)",
-              }}
-            >
-              <div style={{ fontSize: 40, lineHeight: 1 }}>{af.emoji}</div>
-              <p
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontStyle: "italic",
-                  fontSize: 24,
-                  lineHeight: 1.45,
-                  color: "#4F3B47",
-                  margin: "16px 0 20px",
-                }}
-              >
-                “{af.msg}”
-              </p>
-              <div style={{ fontWeight: 600, fontSize: 16, color: "#5C4753" }}>
-                {af.name}
-              </div>
-              <div
-                style={{
-                  fontSize: 13,
-                  color: "#A98AA0",
-                  letterSpacing: ".1em",
-                  marginTop: 2,
-                }}
-              >
-                {af.place}
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* GUESTBOOK */}
+      {/* WISH GLOBE — lời chúc từ khắp nơi */}
       <section
         style={{
           padding: "84px 24px",
-          background: "#4F3B47",
-          color: "#FBF4EF",
+          background: "linear-gradient(180deg,#EDF3EE,#FBF4EF)",
         }}
       >
-        <div style={{ textAlign: "center", margin: "0 auto 46px", maxWidth: 620 }}>
+        <div style={{ textAlign: "center", margin: "0 auto 40px", maxWidth: 640 }}>
           <div
             style={{
               letterSpacing: ".32em",
               fontSize: 12,
               fontWeight: 600,
-              color: "#E0B7C2",
+              color: "#C9A05B",
               textTransform: "uppercase",
             }}
           >
-            Sổ lưu bút
+            Bản đồ lời chúc
           </div>
           <h2
             style={{
               fontFamily: "'Playfair Display', serif",
               fontWeight: 600,
-              fontSize: 42,
-              color: "#FBF4EF",
+              fontSize: "clamp(30px, 5vw, 42px)",
+              color: "#4F3B47",
               margin: "10px 0 0",
             }}
           >
-            Để lại lời chúc nhé
+            Lời chúc từ khắp nơi
           </h2>
           <p
             style={{
+              color: "#7A6470",
+              fontSize: 15,
               margin: "14px auto 0",
               maxWidth: 520,
-              fontSize: 15,
               lineHeight: 1.55,
-              color: "#D9C3CD",
             }}
           >
-            Lời chúc từ khắp nơi — ghim trên quả địa cầu khi bạn cho phép vị trí.
+            Mỗi lời chúc kèm vị trí sẽ hiện thành một điểm sáng trên quả địa cầu.
+            Xoay và phóng to để xem nhé!
           </p>
         </div>
-        <div style={{ maxWidth: 980, margin: "0 auto 36px" }}>
+        <div style={{ maxWidth: 980, margin: "0 auto" }}>
           <WishGlobe
             points={globePoints}
             eventLat={EVENT_GEO.lat}
             eventLng={EVENT_GEO.lng}
           />
         </div>
-        <div className="guest-grid" style={{ maxWidth: 980, margin: "0 auto" }}>
-          <div
-            className="guest-form-panel"
+        <div style={{ textAlign: "center", marginTop: 30 }}>
+          <Link
+            href="/luu-but"
+            className="btn-hover-lg"
             style={{
-              background: "rgba(251,244,239,.06)",
-              border: "1px solid rgba(201,160,91,.35)",
-              borderRadius: 22,
-              padding: "28px 26px",
-              backdropFilter: "blur(4px)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              textDecoration: "none",
+              background: "linear-gradient(135deg,#F3C6CE,#E59FAC)",
+              color: "#4F3B47",
+              fontWeight: 700,
+              fontSize: 15,
+              padding: "14px 26px",
+              borderRadius: 999,
+              boxShadow: "0 12px 28px rgba(79,59,71,.18)",
+              transition: "transform .2s",
             }}
           >
-            <label
-              style={{
-                display: "block",
-                fontSize: 12,
-                letterSpacing: ".16em",
-                color: "#D9C3CD",
-                textTransform: "uppercase",
-                marginBottom: 8,
-              }}
-            >
-              Tên của bạn
-            </label>
-            <input
-              value={gName}
-              onChange={(e) => setGName(e.target.value)}
-              placeholder="VD: Chị Lan"
-              style={{
-                width: "100%",
-                padding: "13px 15px",
-                borderRadius: 12,
-                border: "1px solid rgba(201,160,91,.4)",
-                background: "rgba(251,244,239,.08)",
-                color: "#FBF4EF",
-                fontSize: 15,
-                outline: "none",
-                marginBottom: 18,
-              }}
-            />
-            <label
-              style={{
-                display: "block",
-                fontSize: 12,
-                letterSpacing: ".16em",
-                color: "#D9C3CD",
-                textTransform: "uppercase",
-                marginBottom: 8,
-              }}
-            >
-              Chọn biểu tượng
-            </label>
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 8,
-                marginBottom: 18,
-              }}
-            >
-              {EMOJI_LIST.map((em) => (
-                <button
-                  key={em}
-                  type="button"
-                  onClick={() => setGEmoji(em)}
-                  style={{
-                    width: 42,
-                    height: 42,
-                    fontSize: 20,
-                    borderRadius: 12,
-                    cursor: "pointer",
-                    background:
-                      em === gEmoji ? "#FBEAEE" : "rgba(251,244,239,.08)",
-                    border:
-                      em === gEmoji
-                        ? "2px solid #E59FAC"
-                        : "2px solid transparent",
-                  }}
-                >
-                  {em}
-                </button>
-              ))}
-            </div>
-            <label
-              style={{
-                display: "block",
-                fontSize: 12,
-                letterSpacing: ".16em",
-                color: "#D9C3CD",
-                textTransform: "uppercase",
-                marginBottom: 8,
-              }}
-            >
-              Lời chúc
-            </label>
-            <textarea
-              value={gMsg}
-              onChange={(e) => setGMsg(e.target.value)}
-              placeholder="Viết điều gì đó thật dễ thương…"
-              rows={3}
-              style={{
-                width: "100%",
-                padding: "13px 15px",
-                borderRadius: 12,
-                border: "1px solid rgba(201,160,91,.4)",
-                background: "rgba(251,244,239,.08)",
-                color: "#FBF4EF",
-                fontSize: 15,
-                outline: "none",
-                resize: "vertical",
-                marginBottom: 18,
-              }}
-            />
-            <label
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                gap: 10,
-                marginBottom: 14,
-                cursor: "pointer",
-                fontSize: 14,
-                lineHeight: 1.45,
-                color: "#E8D4DC",
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={shareWishLocation}
-                onChange={(e) => setShareWishLocation(e.target.checked)}
-                style={{ marginTop: 3, accentColor: "#E59FAC" }}
-              />
-              <span>
-                Ghi nhận vị trí gần đúng để hiện trên địa cầu (trình duyệt sẽ hỏi
-                quyền — không bắt buộc).
-              </span>
-            </label>
-            {locationHint && (
-              <p style={{ color: "#D9C3CD", fontSize: 13, margin: "0 0 12px" }}>
-                {locationHint}
-              </p>
-            )}
-            {guestError && (
-              <p style={{ color: "#F3C6CE", fontSize: 13, margin: "0 0 12px" }}>
-                {guestError}
-              </p>
-            )}
-            <button
-              type="button"
-              className="btn-hover"
-              disabled={guestSubmitting}
-              onClick={() => void addGuest()}
-              style={{
-                width: "100%",
-                border: "none",
-                cursor: guestSubmitting ? "wait" : "pointer",
-                background: "linear-gradient(135deg,#F3C6CE,#E59FAC)",
-                color: "#4F3B47",
-                fontWeight: 700,
-                fontSize: 15,
-                padding: 14,
-                borderRadius: 999,
-                opacity: guestSubmitting ? 0.7 : 1,
-              }}
-            >
-              {guestSubmitting ? "Đang gửi…" : "Gửi lời chúc 💌"}
-            </button>
-          </div>
-          <div className="guest-wishes-panel">
-            <p className="guest-wishes-panel-title">Lời chúc đang bay ✨</p>
-            <p className="guest-wishes-panel-sub">
-              Cuộn xuống trên điện thoại nếu bạn vừa gửi lời chúc — khung bay nằm ngay
-              bên dưới form.
-            </p>
-            <FloatingWishes wishes={guests} />
-          </div>
+            Để lại lời chúc của bạn →
+          </Link>
         </div>
       </section>
 
-      <SignaturePromoSection />
+      <LuuButPromoSection />
 
       {/* RSVP */}
       <section
@@ -1533,7 +1101,7 @@ export function InvitationPage({ initialGuests }: Props) {
             style={{
               fontFamily: "'Playfair Display', serif",
               fontWeight: 600,
-              fontSize: 42,
+              fontSize: "clamp(28px, 5.2vw, 42px)",
               color: "#4F3B47",
               margin: "10px 0 8px",
             }}

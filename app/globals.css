@@ -201,11 +201,12 @@ body {
 }
 
 .wish-bubble--float {
+  --wish-w: min(82vw, 240px);
   position: absolute;
-  left: var(--wish-x);
+  left: calc(var(--wish-frac, 0.5) * (100% - var(--wish-w)));
   top: 100%;
-  width: min(88vw, 260px);
-  max-width: 260px;
+  width: var(--wish-w);
+  max-width: 240px;
   padding: 12px 14px;
   border-radius: 16px;
   background: #fbf4ef;
@@ -224,7 +225,7 @@ body {
 
 @media (max-width: 600px) {
   .wish-bubble--float {
-    width: min(78vw, 240px);
+    --wish-w: min(74vw, 220px);
     padding: 14px 16px;
     border-radius: 18px;
   }
@@ -648,4 +649,26 @@ body {
   font-size: 12px;
   color: #e8d4dc;
   margin-top: 4px;
+}
+
+/* ---------- Gửi ảnh & ký tên (contributions) ---------- */
+.contrib-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+}
+
+@media (max-width: 560px) {
+  .contrib-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.polaroid-card {
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.polaroid-card:hover {
+  transform: rotate(0deg) translateY(-8px) scale(1.03) !important;
+  z-index: 5;
 }

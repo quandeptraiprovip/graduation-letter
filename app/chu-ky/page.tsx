@@ -1,9 +1,6 @@
-import { listSignatures } from "@/lib/signature-store";
-import { SignaturePageClient } from "@/components/SignaturePageClient";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export default async function ChuKyPage() {
-  const initialSignatures = await listSignatures();
-  return <SignaturePageClient initialSignatures={initialSignatures} />;
+// Trang chữ ký đã được gộp vào trang "Lưu bút & Ký tên".
+export default function ChuKyPage() {
+  redirect("/luu-but");
 }

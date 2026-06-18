@@ -12,7 +12,8 @@ export type FloatingWish = {
 
 type BubbleSpec = FloatingWish & {
   key: string;
-  x: number;
+  /** Vị trí ngang 0..1 (0 = sát trái, 1 = sát phải) — phân bố đều theo làn. */
+  frac: number;
   duration: number;
   delay: number;
   drift: number;
@@ -32,13 +33,19 @@ function buildBubbles(wishes: FloatingWish[], max: number): BubbleSpec[] {
   for (let i = 0; i < capped; i++) {
     const w = wishes[i % wishes.length];
     const h = hash(`${w.name}-${w.when}-${i}`);
+    // Chia đều thành các làn dọc, thêm chút lệch ngẫu nhiên để tự nhiên hơn.
+    const base = capped > 1 ? i / (capped - 1) : 0.5;
+    const jitter =
+      capped > 1
+        ? (((h % 1000) / 1000) - 0.5) * (1 / (capped - 1)) * 0.7
+        : 0;
     out.push({
       ...w,
       key: `b-${i}-${w.when}-${h}`,
-      x: 4 + (h % 62),
+      frac: Math.max(0, Math.min(1, base + jitter)),
       duration: 22 + (h % 14),
       delay: -((h % 45) + i * 2.4),
-      drift: (h % 2 === 0 ? 1 : -1) * (6 + (h % 12)),
+      drift: (h % 2 === 0 ? 1 : -1) * (4 + (h % 8)),
     });
   }
   return out;
@@ -151,7 +158,7 @@ export function FloatingWishes({ wishes }: Props) {
               className={`wish-bubble wish-bubble--float${held ? " wish-bubble--held" : ""}`}
               style={
                 {
-                  "--wish-x": `${b.x}%`,
+                  "--wish-frac": `${b.frac}`,
                   "--wish-dur": `${dur}s`,
                   "--wish-delay": `${b.delay}s`,
                   "--wish-drift": `${b.drift}px`,
