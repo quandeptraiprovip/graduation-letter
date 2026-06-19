@@ -1,6 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { hrefWithInviteSlug } from "@/lib/invite-path";
 
 export function LuuButPromoSection() {
+  const pathname = usePathname();
+  const luuButHref = hrefWithInviteSlug(pathname, "luu-but");
   return (
     <section
       id="luu-but-promo"
@@ -136,7 +142,7 @@ export function LuuButPromoSection() {
               “Để lại đôi dòng và chữ ký để Diễm nhớ mãi ngày có bạn bên cạnh.”
             </p>
             <Link
-              href="/luu-but"
+              href={luuButHref}
               className="btn-hover-lg"
               style={{
                 display: "inline-flex",

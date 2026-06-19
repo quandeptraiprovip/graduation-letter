@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   type ChangeEvent,
   useCallback,
@@ -11,6 +12,9 @@ import {
   useRef,
   useState,
 } from "react";
+import { useInviteGuest } from "@/hooks/useInviteGuest";
+import { usePrefillInviteName } from "@/hooks/usePrefillInviteName";
+import { hrefWithInviteSlug } from "@/lib/invite-path";
 import { SignaturePad, type SignaturePadHandle } from "@/components/SignaturePad";
 import { FloatingWishes } from "@/components/FloatingWishes";
 import type { GlobeWishPoint } from "@/components/WishGlobe";
@@ -76,6 +80,8 @@ export function GuestbookSignatureClient({
   initialGuests,
   initialContributions,
 }: Props) {
+  const pathname = usePathname();
+  const { displayName, slug, isPersonalized } = useInviteGuest();
   const { canvasRef, launch } = useConfetti();
 
   // ---------- Lưu bút (guestbook) ----------
@@ -83,6 +89,11 @@ export function GuestbookSignatureClient({
     toDisplay(initialGuests)
   );
   const [gName, setGName] = useState("");
+  const { onNameChange: onGNameChange } = usePrefillInviteName(
+    displayName,
+    slug,
+    setGName
+  );
   const [gMsg, setGMsg] = useState("");
   const [gEmoji, setGEmoji] = useState("💖");
   const [guestSubmitting, setGuestSubmitting] = useState(false);
@@ -180,7 +191,7 @@ export function GuestbookSignatureClient({
         },
         ...prev,
       ]);
-      setGName("");
+      setGName(displayName ?? "");
       setGMsg("");
       setGEmoji("💖");
       launch(45);
@@ -189,7 +200,7 @@ export function GuestbookSignatureClient({
     } finally {
       setGuestSubmitting(false);
     }
-  }, [gEmoji, gMsg, gName, launch, shareWishLocation]);
+  }, [displayName, gEmoji, gMsg, gName, launch, shareWishLocation]);
 
   // ---------- photo picker ----------
   const onPick = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -273,7 +284,7 @@ export function GuestbookSignatureClient({
         }}
       >
         <Link
-          href="/"
+          href={hrefWithInviteSlug(pathname, "home")}
           style={{
             textDecoration: "none",
             color: "#6B5560",
@@ -328,6 +339,18 @@ export function GuestbookSignatureClient({
         >
           Lưu bút & Ký tên
         </h1>
+        {isPersonalized && displayName ? (
+          <div className="invite-hero-letter invite-hero-letter--compact">
+            <p className="invite-hero-eyebrow">Trân trọng kính mời</p>
+            <p className="invite-hero-guest invite-hero-guest--compact">{displayName}</p>
+            <p className="invite-hero-bridge">
+              đến để lại lời chúc trong ngày trọng đại của
+            </p>
+            <p className="invite-hero-graduate invite-hero-graduate--inline">
+              Kiều Diễm
+            </p>
+          </div>
+        ) : null}
         <p style={{ color: "#7A6470", fontSize: 15, maxWidth: 520, margin: "0 auto" }}>
           Để lại một lời chúc thật dễ thương, gửi một bức ảnh và ký tên lưu niệm.
           Tất cả sẽ được Diễm gom thành kỷ niệm ngày tốt nghiệp.
@@ -452,7 +475,7 @@ export function GuestbookSignatureClient({
             </label>
             <input
               value={gName}
-              onChange={(e) => setGName(e.target.value)}
+              onChange={(e) => onGNameChange(e.target.value)}
               placeholder="VD: Chị Lan"
               style={{
                 width: "100%",

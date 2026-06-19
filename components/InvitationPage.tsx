@@ -2,7 +2,12 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useInviteGuest } from "@/hooks/useInviteGuest";
+import { usePrefillInviteName } from "@/hooks/usePrefillInviteName";
+import { hrefWithInviteSlug } from "@/lib/invite-path";
+import { HeroInviteCopy } from "@/components/HeroInviteCopy";
 import { ImageSlot } from "@/components/ImageSlot";
 import { LuuButPromoSection } from "@/components/LuuButPromoSection";
 import type { GlobeWishPoint } from "@/components/WishGlobe";
@@ -33,6 +38,8 @@ const ALBUM = [
 ];
 
 export function InvitationPage() {
+  const pathname = usePathname();
+  const { displayName, slug, isPersonalized } = useInviteGuest();
   const cd = useCountdown(EVENT_ISO);
   const { canvasRef, launch } = useConfetti();
   const { toggle, label: musicLabel } = useAmbientMusic();
@@ -43,6 +50,11 @@ export function InvitationPage() {
   const [page, setPage] = useState(0);
   const [globePoints, setGlobePoints] = useState<GlobeWishPoint[]>([]);
   const [rName, setRName] = useState("");
+  const { onNameChange: onRNameChange } = usePrefillInviteName(
+    displayName,
+    slug,
+    setRName
+  );
   const [rAttend, setRAttend] = useState<"" | "yes" | "no">("");
   const [rMsg, setRMsg] = useState("");
   const [rDone, setRDone] = useState(false);
@@ -248,18 +260,8 @@ export function InvitationPage() {
               <circle cx="85" cy="52" r="5" fill="#C9A05B" />
             </svg>
           </div>
-          <div
-            style={{
-              letterSpacing: ".36em",
-              fontSize: 12,
-              fontWeight: 600,
-              color: "#C9A05B",
-              textTransform: "uppercase",
-            }}
-          >
-            Trân trọng kính mời
-          </div>
-          <div style={{ position: "relative", margin: "26px 0 22px" }}>
+          <HeroInviteCopy displayName={isPersonalized ? displayName : null} />
+          <div className="invite-hero-portrait-wrap">
             <div
               style={{
                 position: "absolute",
@@ -283,20 +285,9 @@ export function InvitationPage() {
               }}
             />
           </div>
-          <h1
-            style={{
-              fontFamily: "'Playfair Display', serif",
-              fontStyle: "italic",
-              fontWeight: 600,
-              fontSize: "clamp(42px, 8vw, 62px)",
-              lineHeight: 1.04,
-              margin: 0,
-              color: "#4F3B47",
-            }}
-          >
+          <h1 className="invite-hero-graduate">
             Nguyễn Thị
-            <br />
-            Kiều Diễm
+            <span className="invite-hero-graduate-sub">Kiều Diễm</span>
           </h1>
           <div
             style={{
@@ -1054,7 +1045,7 @@ export function InvitationPage() {
         </div>
         <div style={{ textAlign: "center", marginTop: 30 }}>
           <Link
-            href="/luu-but"
+            href={hrefWithInviteSlug(pathname, "luu-but")}
             className="btn-hover-lg"
             style={{
               display: "inline-flex",
@@ -1160,7 +1151,7 @@ export function InvitationPage() {
               </label>
               <input
                 value={rName}
-                onChange={(e) => setRName(e.target.value)}
+                onChange={(e) => onRNameChange(e.target.value)}
                 placeholder="Tên của bạn"
                 style={{
                   width: "100%",
