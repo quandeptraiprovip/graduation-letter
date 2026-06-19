@@ -490,6 +490,7 @@ export function GuestbookSignatureClient({
               }}
             />
             <label
+              className="guest-emoji-label"
               style={{
                 display: "block",
                 fontSize: 12,
@@ -501,9 +502,7 @@ export function GuestbookSignatureClient({
             >
               Chọn biểu tượng
             </label>
-            <div
-              style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 18 }}
-            >
+            <div className="guest-emoji-picker">
               {EMOJI_LIST.map((em) => (
                 <button
                   key={em}

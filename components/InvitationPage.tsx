@@ -351,25 +351,11 @@ export function InvitationPage() {
             🎓 Tung mũ chúc mừng
           </button>
         </div>
-        <div
-          style={{
-            position: "absolute",
-            bottom: 26,
-            left: "50%",
-            transform: "translateX(-50%)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 8,
-            color: "#B49AAC",
-            fontSize: 11,
-            letterSpacing: ".22em",
-            zIndex: 2,
-            animation: "bob 2.4s ease-in-out infinite",
-          }}
-        >
-          <span>KÉO XUỐNG</span>
-          <span style={{ fontSize: 18, lineHeight: 1 }}>↓</span>
+        <div className="scroll-hint-anchor">
+          <div className="scroll-hint-bob">
+            <span className="scroll-hint-bob__label">KÉO XUỐNG</span>
+            <span style={{ fontSize: 18, lineHeight: 1 }}>↓</span>
+          </div>
         </div>
       </section>
 

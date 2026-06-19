@@ -51,6 +51,51 @@ body {
   }
 }
 
+/* Anchor centers horizontally; inner node runs bob (avoids transform conflict). */
+.scroll-hint-anchor {
+  position: absolute;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.scroll-hint-bob {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #b49aac;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  animation: bob 2.4s ease-in-out infinite;
+}
+
+.scroll-hint-bob__label {
+  padding-right: 0.22em;
+  text-align: center;
+}
+
+.guest-emoji-label {
+  text-align: center;
+  padding-right: 0.16em;
+}
+
+.guest-emoji-picker {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.guest-emoji-picker button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
 .invitation-root {
   position: relative;
   font-family: "Be Vietnam Pro", sans-serif;
