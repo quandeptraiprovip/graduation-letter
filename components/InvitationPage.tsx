@@ -103,13 +103,13 @@ export function InvitationPage() {
       leaf(0, { cover: true }, { slot: "yb1", cap: "Tân sinh viên · 2023" }),
       leaf(
         1,
-        { slot: "yb2", cap: "Những người bạn thân" },
-        { slot: "yb3", cap: "Đêm trắng đồ án" }
+        { slot: "yb2", cap: "" },
+        { slot: "yb3", cap: "" }
       ),
       leaf(
         2,
-        { slot: "yb4", cap: "Ngày bảo vệ" },
-        { slot: "yb5", cap: "Khoảnh khắc tốt nghiệp" }
+        { slot: "yb4", cap: "" },
+        { slot: "yb5", cap: "" }
       ),
       leaf(3, { slot: "yb6", cap: "Một thời để nhớ" }, { endcover: true }),
     ];
