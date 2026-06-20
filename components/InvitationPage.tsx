@@ -11,9 +11,8 @@ import { HeroInviteCopy } from "@/components/HeroInviteCopy";
 import { ImageSlot } from "@/components/ImageSlot";
 import { LuuButPromoSection } from "@/components/LuuButPromoSection";
 import type { GlobeWishPoint } from "@/components/WishGlobe";
-import { EVENT_ISO, EVENT_GEO, IMAGES } from "@/lib/config";
+import { EVENT_GEO, EVENT_ISO, EVENT_MAPS_QUERY, IMAGES } from "@/lib/config";
 import type { GuestEntry } from "@/lib/guestbook-store";
-import { useAmbientMusic } from "@/hooks/useAmbientMusic";
 import { useConfetti } from "@/hooks/useConfetti";
 import { useCountdown } from "@/hooks/useCountdown";
 
@@ -30,11 +29,11 @@ const WishGlobe = dynamic(
 );
 
 const ALBUM = [
-  { key: "al1" as const, cap: "Ngày khai giảng" },
-  { key: "al2" as const, cap: "Hội bạn thân" },
-  { key: "al3" as const, cap: "Góc thư viện" },
-  { key: "al4" as const, cap: "Mùa đồ án" },
-  { key: "al5" as const, cap: "Ngày ra trường" },
+  { key: "al1" as const, cap: "" },
+  { key: "al2" as const, cap: "" },
+  { key: "al3" as const, cap: "" },
+  { key: "al4" as const, cap: "" },
+  { key: "al5" as const, cap: "" },
 ];
 
 export function InvitationPage() {
@@ -42,7 +41,6 @@ export function InvitationPage() {
   const { displayName, slug, isPersonalized } = useInviteGuest();
   const cd = useCountdown(EVENT_ISO);
   const { canvasRef, launch } = useConfetti();
-  const { toggle, label: musicLabel } = useAmbientMusic();
 
   const heroRef = useRef<HTMLDivElement>(null);
   const capRef = useRef<HTMLDivElement>(null);
@@ -102,7 +100,7 @@ export function InvitationPage() {
       z: i < page ? i : N - i,
     });
     return [
-      leaf(0, { cover: true }, { slot: "yb1", cap: "Tân sinh viên · 2021" }),
+      leaf(0, { cover: true }, { slot: "yb1", cap: "Tân sinh viên · 2023" }),
       leaf(
         1,
         { slot: "yb2", cap: "Những người bạn thân" },
@@ -291,30 +289,19 @@ export function InvitationPage() {
           </h1>
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 14,
               margin: "22px 0 6px",
               fontSize: 15,
               fontWeight: 500,
               color: "#5C4753",
-              flexWrap: "wrap",
-              justifyContent: "center",
+              lineHeight: 1.65,
+              maxWidth: 520,
             }}
           >
-            <span>Đại học Bách Khoa TP.HCM</span>
-            <span
-              style={{
-                width: 5,
-                height: 5,
-                borderRadius: "50%",
-                background: "#C9A05B",
-              }}
-            />
-            <span>Khoa Học Máy Tính</span>
+            <div>Trường Đại học Kinh tế - Đại học Đà Nẵng</div>
+            <div>Ngành Digital Marketing</div>
           </div>
           <div style={{ letterSpacing: ".28em", fontSize: 13, color: "#A98AA0" }}>
-            NIÊN KHÓA 2021 — 2025
+            NIÊN KHÓA 2023 — 2026
           </div>
           <p
             style={{
@@ -523,10 +510,10 @@ export function InvitationPage() {
                       color: "#4F3B47",
                     }}
                   >
-                    9:00 sáng
+                    16:00
                   </div>
                   <div style={{ fontSize: 15, color: "#6B5560" }}>
-                    Chủ Nhật, ngày 20 tháng 07, 2026
+                    Chủ Nhật, ngày 28 tháng 06, 2026
                   </div>
                 </div>
               </div>
@@ -566,19 +553,19 @@ export function InvitationPage() {
                       color: "#4F3B47",
                     }}
                   >
-                    Hội trường A
+                    Sảnh A
                   </div>
                   <div style={{ fontSize: 15, color: "#6B5560" }}>
-                    ĐH Bách Khoa — 268 Lý Thường Kiệt,
+                    Trường Đại học Kinh tế - Đại học Đà Nẵng
                     <br />
-                    Phường 14, Quận 10, TP.HCM
+                    71 Ngũ Hành Sơn, Đà Nẵng
                   </div>
                 </div>
               </div>
               <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                 <a
                   className="btn-hover"
-                  href="https://www.google.com/maps/dir/?api=1&destination=268%20L%C3%BD%20Th%C6%B0%E1%BB%9Dng%20Ki%E1%BB%87t%2C%20Qu%E1%BA%ADn%2010%2C%20TP.HCM"
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(EVENT_MAPS_QUERY)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -598,7 +585,7 @@ export function InvitationPage() {
                 </a>
                 <a
                   className="btn-hover"
-                  href="https://maps.google.com/?q=268%20L%C3%BD%20Th%C6%B0%E1%BB%9Dng%20Ki%E1%BB%87t%2C%20Qu%E1%BA%ADn%2010%2C%20TP.HCM"
+                  href={`https://maps.google.com/?q=${encodeURIComponent(EVENT_MAPS_QUERY)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{
@@ -630,7 +617,7 @@ export function InvitationPage() {
             >
               <iframe
                 title="Bản đồ địa điểm"
-                src="https://maps.google.com/maps?q=268%20L%C3%BD%20Th%C6%B0%E1%BB%9Dng%20Ki%E1%BB%87t%2C%20Qu%E1%BA%ADn%2010%2C%20TP.HCM&z=15&output=embed"
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(EVENT_MAPS_QUERY)}&z=15&output=embed`}
                 style={{
                   width: "100%",
                   height: "100%",
@@ -677,7 +664,7 @@ export function InvitationPage() {
             Bốn năm thanh xuân
           </h2>
           <p style={{ color: "#7A6470", fontSize: 15, margin: "14px 0 0" }}>
-            Ảnh sẽ được cập nhật trong thư mục <code>public/images</code>.
+            Những khoảnh khắc đáng nhớ trên hành trình học tập.
           </p>
         </div>
         <div
@@ -835,7 +822,7 @@ export function InvitationPage() {
                         color: "#4F3B47",
                       }}
                     >
-                      2021 — 2025
+                      2023 — 2026
                     </div>
                     <div
                       style={{
@@ -1166,7 +1153,7 @@ export function InvitationPage() {
               <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
                 {(
                   [
-                    ["yes", "Có, em sẽ đến 🎉"],
+                    ["yes", "Có, tôi sẽ đến 🎉"],
                     ["no", "Tiếc quá, không đến được"],
                   ] as const
                 ).map(([key, label]) => {
@@ -1296,32 +1283,6 @@ export function InvitationPage() {
           zIndex: 60,
         }}
       />
-      <button
-        type="button"
-        className="btn-hover"
-        onClick={toggle}
-        style={{
-          position: "fixed",
-          bottom: 22,
-          right: 22,
-          zIndex: 70,
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          cursor: "pointer",
-          border: "1px solid rgba(201,160,91,.5)",
-          background: "#FFFCFAee",
-          color: "#4F3B47",
-          fontWeight: 600,
-          fontSize: 13,
-          padding: "11px 16px",
-          borderRadius: 999,
-          boxShadow: "0 10px 26px rgba(79,59,71,.2)",
-          backdropFilter: "blur(6px)",
-        }}
-      >
-        {musicLabel}
-      </button>
     </div>
   );
 }
