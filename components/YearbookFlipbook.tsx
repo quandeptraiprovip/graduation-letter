@@ -164,7 +164,7 @@ export function YearbookFlipbook() {
                 {lf.front.cover ? (
                   <div className="yearbook-cover yearbook-cover--front">
                     <div className="yearbook-cover-label">KỶ YẾU</div>
-                    <div className="yearbook-cover-years">2023 — 2026</div>
+                    <div className="yearbook-cover-years">2022 — 2026</div>
                     <div className="yearbook-cover-name">Kiều Diễm</div>
                   </div>
                 ) : lf.front.slot ? (
