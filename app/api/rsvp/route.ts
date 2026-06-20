@@ -11,6 +11,7 @@ export async function POST(request: Request) {
       name?: string;
       attend?: string;
       message?: string;
+      inviteSlug?: string;
     };
     if (body.attend !== "yes" && body.attend !== "no") {
       return NextResponse.json(
@@ -22,13 +23,14 @@ export async function POST(request: Request) {
       name: body.name ?? "",
       attend: body.attend,
       message: body.message ?? "",
+      inviteSlug: body.inviteSlug,
     });
     return NextResponse.json({ entry }, { status: 201 });
   } catch (e) {
     const msg = formatStorageError(e, "Lỗi lưu RSVP");
     const status = msg.includes("Thiếu")
       ? 400
-      : msg === STORAGE_HELP
+      : msg === STORAGE_HELP || msg.includes("Vercel") || msg.includes("Google")
         ? 503
         : 500;
     return NextResponse.json({ error: msg }, { status });

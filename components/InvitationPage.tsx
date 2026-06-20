@@ -57,6 +57,7 @@ export function InvitationPage() {
   const [rMsg, setRMsg] = useState("");
   const [rDone, setRDone] = useState(false);
   const [rsvpSubmitting, setRsvpSubmitting] = useState(false);
+  const [rsvpError, setRsvpError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/guestbook", { cache: "no-store" })
@@ -156,11 +157,17 @@ export function InvitationPage() {
     const name = rName.trim();
     if (!name || !rAttend) return;
     setRsvpSubmitting(true);
+    setRsvpError(null);
     try {
       const res = await fetch("/api/rsvp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, attend: rAttend, message: rMsg }),
+        body: JSON.stringify({
+          name,
+          attend: rAttend,
+          message: rMsg,
+          inviteSlug: slug || undefined,
+        }),
       });
       if (!res.ok) {
         const data = await res.json();
@@ -169,11 +176,13 @@ export function InvitationPage() {
       setRDone(true);
       if (rAttend === "yes") launch(90);
     } catch (e) {
-      console.error(e);
+      setRsvpError(
+        e instanceof Error ? e.message : "Không gửi được xác nhận tham dự"
+      );
     } finally {
       setRsvpSubmitting(false);
     }
-  }, [launch, rAttend, rMsg, rName]);
+  }, [launch, rAttend, rMsg, rName, slug]);
 
   const yes = rAttend === "yes";
   const rsvpIcon = yes ? "🎉" : "💛";
@@ -1222,6 +1231,11 @@ export function InvitationPage() {
                   marginBottom: 22,
                 }}
               />
+              {rsvpError && (
+                <p style={{ color: "#B3261E", fontSize: 14, margin: "0 0 14px" }}>
+                  {rsvpError}
+                </p>
+              )}
               <button
                 type="button"
                 className="btn-hover"
@@ -1249,7 +1263,8 @@ export function InvitationPage() {
                   margin: "14px 0 0",
                 }}
               >
-                RSVP được lưu vào <code>data/rsvp.csv</code> trên server.
+                Xác nhận được lưu vào Google Sheet (tab{" "}
+                <strong>RSVP</strong>) cùng file với lời chúc &amp; lưu bút.
               </p>
             </div>
           )}
