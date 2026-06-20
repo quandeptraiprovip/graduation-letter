@@ -824,7 +824,7 @@ export function InvitationPage() {
                         color: "#4F3B47",
                       }}
                     >
-                      2023 — 2026
+                      2022 — 2026
                     </div>
                     <div
                       style={{
