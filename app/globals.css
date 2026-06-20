@@ -1233,12 +1233,69 @@ body {
   pointer-events: none;
 }
 
+.yearbook-left-page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: 50%;
+  height: 100%;
+  border-radius: 6px 0 0 6px;
+  border: 1px solid rgba(201, 160, 91, 0.32);
+  background: #fffcfa;
+  box-shadow: inset -18px 0 28px rgba(79, 59, 71, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: opacity 0.35s ease;
+}
+
+.yearbook-left-page--spine {
+  background: #f1e4dc;
+  box-shadow: inset -22px 0 34px rgba(79, 59, 71, 0.14);
+}
+
+.yearbook-text-page {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px 16px;
+  text-align: center;
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  line-height: 1.55;
+  color: #4f3b47;
+}
+
+.yearbook-text-page--memo {
+  font-size: clamp(17px, 4.2vw, 21px);
+  background: repeating-linear-gradient(
+    #fffdfb,
+    #fffdfb 36px,
+    rgba(201, 160, 91, 0.14) 37px,
+    #fffdfb 38px
+  );
+  color: #5c4753;
+}
+
+.yearbook-text-page--quote {
+  font-size: clamp(16px, 3.8vw, 19px);
+  background: linear-gradient(165deg, #faf6f2, #f3ebe3);
+}
+
+.yearbook-text-page--end {
+  font-size: clamp(18px, 4.5vw, 24px);
+  background: linear-gradient(160deg, #cbe7d8, #d9cdea);
+}
+
 .yearbook-leaf {
   position: absolute;
   top: 0;
   left: 50%;
   width: 50%;
   height: 100%;
+  z-index: 1;
   transform-origin: left center;
   transform-style: preserve-3d;
   transform: rotateY(0deg) translateZ(0.5px);
