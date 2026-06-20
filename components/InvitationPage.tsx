@@ -8,10 +8,11 @@ import { useInviteGuest } from "@/hooks/useInviteGuest";
 import { usePrefillInviteName } from "@/hooks/usePrefillInviteName";
 import { hrefWithInviteSlug } from "@/lib/invite-path";
 import { HeroInviteCopy } from "@/components/HeroInviteCopy";
+import { JourneyAlbumSection } from "@/components/JourneyAlbumSection";
 import { ImageSlot } from "@/components/ImageSlot";
 import { LuuButPromoSection } from "@/components/LuuButPromoSection";
 import type { GlobeWishPoint } from "@/components/WishGlobe";
-import { EVENT_GEO, EVENT_ISO, EVENT_MAPS_QUERY, IMAGES } from "@/lib/config";
+import { EVENT_GEO, EVENT_ISO, EVENT_MAPS_QUERY, IMAGES, YEARBOOK_PAGE_COUNT } from "@/lib/config";
 import type { GuestEntry } from "@/lib/guestbook-store";
 import { useConfetti } from "@/hooks/useConfetti";
 import { useCountdown } from "@/hooks/useCountdown";
@@ -27,14 +28,6 @@ const WishGlobe = dynamic(
     ),
   }
 );
-
-const ALBUM = [
-  { key: "al1" as const, cap: "" },
-  { key: "al2" as const, cap: "" },
-  { key: "al3" as const, cap: "" },
-  { key: "al4" as const, cap: "" },
-  { key: "al5" as const, cap: "" },
-];
 
 export function InvitationPage() {
   const pathname = usePathname();
@@ -107,12 +100,13 @@ export function InvitationPage() {
   }, []);
 
   const leaves = useMemo(() => {
-    const N = 4;
+    const N = YEARBOOK_PAGE_COUNT;
     const leaf = (
       i: number,
       front: { cover?: boolean; slot?: keyof typeof IMAGES.yearbook; cap?: string },
       back: {
         endcover?: boolean;
+        memoSpread?: boolean;
         slot?: keyof typeof IMAGES.yearbook;
         cap?: string;
       }
@@ -131,10 +125,10 @@ export function InvitationPage() {
       ),
       leaf(
         2,
-        { slot: "yb4", cap: "" },
-        { slot: "yb5", cap: "" }
+        { slot: "yb4", cap: "Một thời để nhớ" },
+        { memoSpread: true }
       ),
-      leaf(3, { slot: "yb6", cap: "Một thời để nhớ" }, { endcover: true }),
+      leaf(3, {}, { endcover: true }),
     ];
   }, [page]);
 
@@ -664,86 +658,7 @@ export function InvitationPage() {
         </div>
       </section>
 
-      {/* ALBUM */}
-      <section
-        style={{
-          padding: "84px 24px",
-          background: "linear-gradient(180deg,#F4ECF6,#FBF4EF)",
-          overflow: "hidden",
-        }}
-      >
-        <div style={{ textAlign: "center", margin: "0 auto 50px", maxWidth: 620 }}>
-          <div
-            style={{
-              letterSpacing: ".32em",
-              fontSize: 12,
-              fontWeight: 600,
-              color: "#C9A05B",
-              textTransform: "uppercase",
-            }}
-          >
-            Album hành trình
-          </div>
-          <h2
-            style={{
-              fontFamily: "'Playfair Display', serif",
-              fontWeight: 600,
-              fontSize: "clamp(28px, 5.2vw, 42px)",
-              color: "#4F3B47",
-              margin: "10px 0 0",
-            }}
-          >
-            Bốn năm thanh xuân
-          </h2>
-          <p style={{ color: "#7A6470", fontSize: 15, margin: "14px 0 0" }}>
-            Những khoảnh khắc đáng nhớ trên hành trình học tập.
-          </p>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            gap: 26,
-            justifyContent: "center",
-            flexWrap: "wrap",
-            maxWidth: 1100,
-            margin: "0 auto",
-          }}
-        >
-          {ALBUM.map((a) => (
-            <div
-              key={a.key}
-              style={{
-                flex: "none",
-                width: 206,
-                background: "#FFFCFA",
-                padding: "13px 13px 0",
-                borderRadius: 5,
-                boxShadow: "0 14px 30px rgba(79,59,71,.16)",
-              }}
-            >
-              <ImageSlot
-                src={IMAGES.album[a.key] || undefined}
-                alt={a.cap}
-                placeholder="Ảnh album"
-                sizes="206px"
-                style={{ width: "100%", height: 200 }}
-              />
-              <div
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontStyle: "italic",
-                  fontSize: 17,
-                  color: "#5C4753",
-                  textAlign: "center",
-                  padding: "15px 4px 20px",
-                }}
-              >
-                {a.cap}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <JourneyAlbumSection />
 
       {/* YEARBOOK */}
       <section
@@ -925,6 +840,28 @@ export function InvitationPage() {
                     <br />
                     đồng hành 💛
                   </div>
+                ) : lf.back.memoSpread ? (
+                  <div
+                    style={{
+                      flex: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: 28,
+                      textAlign: "center",
+                      background:
+                        "repeating-linear-gradient(#FFFDFB,#FFFDFB 38px,rgba(201,160,91,.12) 39px,#FFFDFB 40px)",
+                      fontFamily: "'Playfair Display', serif",
+                      fontStyle: "italic",
+                      fontSize: 20,
+                      lineHeight: 1.55,
+                      color: "#5C4753",
+                    }}
+                  >
+                    Bốn năm — một chặng
+                    <br />
+                    đẹp nhất 💛
+                  </div>
                 ) : lf.back.slot ? (
                   <>
                     <ImageSlot
@@ -979,12 +916,12 @@ export function InvitationPage() {
             ← Trang trước
           </button>
           <span style={{ fontSize: 13, color: "#A98AA0", minWidth: 78 }}>
-            {page} / 4
+            {page} / {YEARBOOK_PAGE_COUNT}
           </span>
           <button
             type="button"
             className="btn-hover"
-            onClick={() => setPage((p) => Math.min(4, p + 1))}
+            onClick={() => setPage((p) => Math.min(YEARBOOK_PAGE_COUNT, p + 1))}
             style={{
               border: "none",
               background: "#4F3B47",

@@ -10,22 +10,24 @@ export const EVENT_MAPS_QUERY =
 
 export const SHOW_FRIEND_MAP = true;
 
-/** Đường dẫn ảnh trong `public/` — để trống sẽ hiện khung placeholder. */
+/** Đường dẫn ảnh trong `public/` — mỗi file chỉ dùng một lần trên trang. */
 export const IMAGES = {
   portrait: "/images/DSC04586.JPG",
   album: {
     al1: "/images/DSC03763.JPG",
-    al2: "/images/DSC03911.JPG",
-    al3: "/images/DSC04254.JPG",
-    al4: "/images/DSC05040.JPG",
-    al5: "/images/DSC05047.JPG",
+    al2: "/images/DSC03782.JPG",
+    al3: "/images/DSC03911.JPG",
+    al4: "/images/DSC04116.JPG",
+    al5: "/images/DSC04207.JPG",
+    al6: "/images/DSC04254.JPG",
   },
   yearbook: {
     yb1: "/images/DSC04595.JPG",
-    yb2: "/images/DSC03763.JPG",
-    yb3: "/images/DSC03911.JPG",
-    yb4: "/images/DSC04254.JPG",
-    yb5: "/images/DSC05040.JPG",
-    yb6: "/images/DSC05047.JPG",
+    yb2: "/images/DSC04639.JPG",
+    yb3: "/images/DSC05040.JPG",
+    yb4: "/images/DSC05047.JPG",
   },
 } as const;
+
+/** Số “tờ” lật trong cuốn kỷ yếu (0 … YEARBOOK_PAGE_COUNT). */
+export const YEARBOOK_PAGE_COUNT = 4;

@@ -24,6 +24,23 @@ async function optimizeFile(filePath, basename) {
   return { bytes: out.length, width: meta.width, height: meta.height };
 }
 
+async function syncImagesToPublic() {
+  const srcDir = path.join(ROOT, "images");
+  const destDir = path.join(ROOT, "public/images");
+  await fs.mkdir(destDir, { recursive: true });
+  let entries;
+  try {
+    entries = await fs.readdir(srcDir);
+  } catch {
+    return;
+  }
+  for (const name of entries) {
+    if (!/\.jpe?g$/i.test(name)) continue;
+    if (/\(\d+\)/.test(name)) continue;
+    await fs.copyFile(path.join(srcDir, name), path.join(destDir, name));
+  }
+}
+
 async function processDir(relDir) {
   const dir = path.join(ROOT, relDir);
   let entries;
@@ -32,7 +49,9 @@ async function processDir(relDir) {
   } catch {
     return;
   }
-  const jpgs = entries.filter((f) => /\.jpe?g$/i.test(f));
+  const jpgs = entries.filter(
+    (f) => /\.jpe?g$/i.test(f) && !/\(\d+\)/.test(f)
+  );
   for (const name of jpgs) {
     const filePath = path.join(dir, name);
     const before = (await fs.stat(filePath)).size;
@@ -43,6 +62,7 @@ async function processDir(relDir) {
   }
 }
 
+await syncImagesToPublic();
 for (const d of DIRS) {
   await processDir(d);
 }
