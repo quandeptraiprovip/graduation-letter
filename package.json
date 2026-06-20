@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "optimize:images": "node scripts/optimize-images.mjs"
   },
   "dependencies": {
     "@vercel/blob": "^2.4.0",
@@ -15,6 +16,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-globe.gl": "^2.38.0",
+    "sharp": "^0.35.2",
     "three": "^0.184.0"
   },
   "devDependencies": {

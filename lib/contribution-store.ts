@@ -11,13 +11,18 @@ import {
   isReadOnlyServerFilesystem,
 } from "./persist";
 import { storeContribImage } from "./contribution-storage";
+import {
+  optimizeContributionPhoto,
+  optimizeContributionSignature,
+} from "./optimize-contribution-media";
 import type { ContributionEntry } from "./contribution-display";
+import { inviteNameFromSlug } from "./telex-slug";
 
 export type { ContributionEntry } from "./contribution-display";
 export { resolveContribImageSrc } from "./contribution-display";
 
 const TAB = "Contributions";
-const HEADERS = ["timestamp", "photoUrl", "sigUrl"];
+const HEADERS = ["timestamp", "photoUrl", "sigUrl", "name"];
 const INDEX = "contributions.csv";
 const EMPTY = `${HEADERS.join(",")}\n`;
 
@@ -35,22 +40,40 @@ function byNewest(a: ContributionEntry, b: ContributionEntry) {
 }
 
 function rowToEntry(cols: string[]): ContributionEntry | null {
-  const [timestamp, photoUrl, sigUrl] = cols;
+  const [timestamp, photoUrl, sigUrl, name] = cols;
   const photo = photoUrl?.trim();
   const sig = sigUrl?.trim();
+  const guestName = name?.trim();
   if (!photo && !sig) return null;
   return {
     timestamp: timestamp || new Date().toISOString(),
+    ...(guestName ? { name: guestName } : {}),
     ...(photo ? { photoUrl: photo } : {}),
     ...(sig ? { sigUrl: sig } : {}),
   };
+}
+
+function resolveContributorName(input: {
+  name?: string;
+  inviteSlug?: string;
+}): string {
+  const fromField = input.name?.trim();
+  if (fromField) return fromField;
+  const slug = input.inviteSlug?.trim();
+  if (slug) {
+    const fromSlug = inviteNameFromSlug(slug);
+    if (fromSlug) return fromSlug;
+  }
+  return "";
 }
 
 async function listFromCsv(): Promise<ContributionEntry[]> {
   const text = await readDataTextOrDefault(INDEX, EMPTY);
   const rows = parseCsv(text.trim() ? text : EMPTY);
   return rows
-    .map((r) => rowToEntry([r.timestamp, r.photoUrl, r.sigUrl]))
+    .map((r) =>
+      rowToEntry([r.timestamp, r.photoUrl, r.sigUrl, r.name ?? ""])
+    )
     .filter((r): r is ContributionEntry => r !== null)
     .sort(byNewest);
 }
@@ -70,6 +93,8 @@ export async function appendContribution(input: {
   photo?: Buffer;
   photoExt?: string;
   sig?: Buffer;
+  name?: string;
+  inviteSlug?: string;
 }): Promise<ContributionEntry> {
   const hasPhoto = Boolean(input.photo && input.photo.length);
   const hasSig = Boolean(input.sig && input.sig.length);
@@ -88,23 +113,33 @@ export async function appendContribution(input: {
   let sigUrl: string | undefined;
 
   if (hasPhoto && input.photo) {
-    const ext = input.photoExt === "png" ? "png" : "jpg";
+    const { buf, ext } = await optimizeContributionPhoto(
+      input.photo,
+      input.photoExt
+    );
     photoUrl = await storeContribImage(
       makeFileId(timestamp, ext),
-      input.photo,
+      buf,
       ext === "png" ? "image/png" : "image/jpeg"
     );
   }
   if (hasSig && input.sig) {
+    const sigBuf = await optimizeContributionSignature(input.sig);
     sigUrl = await storeContribImage(
       makeFileId(timestamp, "png"),
-      input.sig,
+      sigBuf,
       "image/png"
     );
   }
 
+  const guestName = resolveContributorName({
+    name: input.name,
+    inviteSlug: input.inviteSlug,
+  });
+
   const entry: ContributionEntry = {
     timestamp,
+    ...(guestName ? { name: guestName } : {}),
     ...(photoUrl ? { photoUrl } : {}),
     ...(sigUrl ? { sigUrl } : {}),
   };
@@ -114,6 +149,7 @@ export async function appendContribution(input: {
       entry.timestamp,
       photoUrl ?? "",
       sigUrl ?? "",
+      guestName,
     ]);
     return entry;
   }
@@ -128,6 +164,7 @@ export async function appendContribution(input: {
     timestamp: entry.timestamp,
     photoUrl: photoUrl ?? "",
     sigUrl: sigUrl ?? "",
+    name: guestName,
   });
   const next = trimmedText ? `${trimmedText}\n${line}\n` : `${EMPTY}${line}\n`;
   await writeDataText(INDEX, next, "contributions: update index");

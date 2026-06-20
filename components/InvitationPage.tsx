@@ -274,6 +274,7 @@ export function InvitationPage() {
               alt="Chân dung"
               shape="circle"
               placeholder="Ảnh chân dung"
+              sizes="186px"
               style={{
                 position: "relative",
                 width: 186,
@@ -693,6 +694,7 @@ export function InvitationPage() {
                 src={IMAGES.album[a.key] || undefined}
                 alt={a.cap}
                 placeholder="Ảnh album"
+                sizes="206px"
                 style={{ width: "100%", height: 200 }}
               />
               <div
@@ -840,6 +842,7 @@ export function InvitationPage() {
                       src={IMAGES.yearbook[lf.front.slot] || undefined}
                       alt={lf.front.cap ?? ""}
                       placeholder="Ảnh kỷ yếu"
+                      sizes="(max-width: 600px) 50vw, 280px"
                       style={{ width: "100%", flex: 1, minHeight: 280 }}
                     />
                     <div
@@ -897,6 +900,7 @@ export function InvitationPage() {
                       src={IMAGES.yearbook[lf.back.slot] || undefined}
                       alt={lf.back.cap ?? ""}
                       placeholder="Ảnh kỷ yếu"
+                      sizes="(max-width: 600px) 50vw, 280px"
                       style={{ width: "100%", flex: 1, minHeight: 280 }}
                     />
                     <div

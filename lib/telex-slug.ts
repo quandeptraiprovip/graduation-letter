@@ -57,6 +57,26 @@ function indexForToneMark(text: string): number {
     }
   }
 
+  // oa, oe, uy → dấu trên o / o / u (hóa, loe, thuỷ…)
+  if (/oa|oe/.test(plain)) {
+    const o = vowels.find((v) => v.base === "o");
+    if (o) return o.index;
+  }
+  if (/uy/.test(plain)) {
+    const u = vowels.find((v) => v.base === "u");
+    if (u) return u.index;
+  }
+
+  // ao, au, ay → dấu trên a (bảo, cáo, tay…)
+  if (/ao|au|ay/.test(plain)) {
+    const a = vowels.find((v) => v.base === "a");
+    if (a) return a.index;
+  }
+  if (/eo/.test(plain)) {
+    const e = vowels.find((v) => v.base === "e");
+    if (e) return e.index;
+  }
+
   return vowels[vowels.length - 1].index;
 }
 
@@ -76,6 +96,9 @@ function expandSlugVowelShorthand(word: string): string {
   let w = word.toLowerCase();
   // quana / quanaf → quaan / quaanf (Quân / Quần…)
   w = w.replace(/^quana([sfrxj]?)$/i, (_, tone) => `quaan${tone ?? ""}`);
+  // nguyenx / nguyenxe (URL rút gọn) → nguyeenx (Nguyễn)
+  w = w.replace(/^nguyenxe$/i, "nguyeenx");
+  w = w.replace(/^nguyen([sfrxj])$/i, (_, tone) => `nguyeen${tone}`);
   return w;
 }
 

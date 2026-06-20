@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -211,7 +210,7 @@ export function GuestbookSignatureClient({
     reader.onload = (ev) => {
       const img = new window.Image();
       img.onload = () => {
-        const max = 1100;
+        const max = 1280;
         let w = img.width;
         let h = img.height;
         if (w > max || h > max) {
@@ -223,7 +222,7 @@ export function GuestbookSignatureClient({
         cv.width = w;
         cv.height = h;
         cv.getContext("2d")?.drawImage(img, 0, 0, w, h);
-        setDraftPhoto(cv.toDataURL("image/jpeg", 0.82));
+        setDraftPhoto(cv.toDataURL("image/jpeg", 0.86));
       };
       img.src = ev.target?.result as string;
     };
@@ -246,7 +245,12 @@ export function GuestbookSignatureClient({
       const res = await fetch("/api/contributions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ photoDataUrl, sigDataUrl }),
+        body: JSON.stringify({
+          photoDataUrl,
+          sigDataUrl,
+          name: gName.trim() || undefined,
+          inviteSlug: slug || undefined,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Gửi thất bại");
@@ -262,7 +266,7 @@ export function GuestbookSignatureClient({
     } finally {
       setContribSubmitting(false);
     }
-  }, [draftPhoto, launch]);
+  }, [draftPhoto, gName, launch, slug]);
 
   const countLabel =
     items.length > 0
@@ -745,8 +749,8 @@ export function GuestbookSignatureClient({
                     position: "relative",
                     borderRadius: 18,
                     overflow: "hidden",
-                    height: 190,
                     border: "1px solid rgba(201,160,91,.3)",
+                    background: "#F3E9E2",
                   }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -755,9 +759,9 @@ export function GuestbookSignatureClient({
                     alt="Ảnh xem trước"
                     style={{
                       width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
+                      height: "auto",
                       display: "block",
+                      verticalAlign: "middle",
                     }}
                   />
                   <button
@@ -1009,19 +1013,21 @@ export function GuestbookSignatureClient({
                       <div
                         style={{
                           position: "relative",
-                          height: 300,
                           background: "#F3E9E2",
                           borderRadius: 2,
                           overflow: "hidden",
+                          lineHeight: 0,
                         }}
                       >
-                        <Image
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
                           src={photoSrc}
                           alt="Ảnh kỷ niệm"
-                          fill
-                          sizes="(max-width:768px) 90vw, 300px"
-                          style={{ objectFit: "cover" }}
-                          unoptimized
+                          style={{
+                            width: "100%",
+                            height: "auto",
+                            display: "block",
+                          }}
                         />
                         {sigSrc && (
                           <>
@@ -1031,9 +1037,10 @@ export function GuestbookSignatureClient({
                                 left: 0,
                                 right: 0,
                                 bottom: 0,
-                                height: "46%",
+                                height: "42%",
                                 background:
                                   "linear-gradient(transparent, rgba(79,59,71,.34))",
+                                pointerEvents: "none",
                               }}
                             />
                             <div
@@ -1042,21 +1049,23 @@ export function GuestbookSignatureClient({
                                 left: 14,
                                 right: 14,
                                 bottom: 12,
-                                height: 90,
+                                height: "min(90px, 28%)",
+                                minHeight: 56,
+                                pointerEvents: "none",
                               }}
                             >
-                              <Image
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
                                 src={sigSrc}
                                 alt="Chữ ký"
-                                fill
-                                sizes="280px"
                                 style={{
+                                  width: "100%",
+                                  height: "100%",
                                   objectFit: "contain",
                                   objectPosition: "left bottom",
                                   filter:
                                     "brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0,0,0,.4))",
                                 }}
-                                unoptimized
                               />
                             </div>
                           </>
@@ -1066,21 +1075,29 @@ export function GuestbookSignatureClient({
                       <div
                         style={{
                           position: "relative",
-                          height: 300,
+                          minHeight: 200,
                           borderRadius: 2,
                           background:
                             "repeating-linear-gradient(#FFFDFB,#FFFDFB 38px,rgba(201,160,91,.16) 39px,#FFFDFB 40px)",
                           overflow: "hidden",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: "24px 28px",
                         }}
                       >
                         {sigSrc && (
-                          <Image
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img
                             src={sigSrc}
                             alt="Chữ ký"
-                            fill
-                            sizes="280px"
-                            style={{ objectFit: "contain", padding: "24px 28px" }}
-                            unoptimized
+                            style={{
+                              width: "100%",
+                              height: "auto",
+                              maxHeight: 220,
+                              objectFit: "contain",
+                              display: "block",
+                            }}
                           />
                         )}
                       </div>

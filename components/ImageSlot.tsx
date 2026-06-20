@@ -9,6 +9,10 @@ type Props = {
   shape?: "circle" | "rect";
   className?: string;
   style?: React.CSSProperties;
+  /** Hint for next/image srcset — match rendered width (incl. ~2× for retina). */
+  sizes?: string;
+  /** `contain` giữ trọn tỉ lệ; `cover` cắt khung (thường dùng cho avatar tròn). */
+  fit?: "cover" | "contain";
 };
 
 export function ImageSlot({
@@ -18,8 +22,11 @@ export function ImageSlot({
   shape = "rect",
   className,
   style,
+  sizes = "(max-width: 768px) 90vw, 400px",
+  fit,
 }: Props) {
   const radius = shape === "circle" ? "50%" : undefined;
+  const objectFit = fit ?? (shape === "circle" ? "cover" : "contain");
 
   if (src) {
     return (
@@ -36,8 +43,8 @@ export function ImageSlot({
           src={src}
           alt={alt}
           fill
-          sizes="(max-width: 768px) 100vw, 400px"
-          style={{ objectFit: "cover" }}
+          sizes={sizes}
+          style={{ objectFit }}
         />
       </div>
     );

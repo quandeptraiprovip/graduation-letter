@@ -36,6 +36,8 @@ export async function POST(request: Request) {
     const body = (await request.json()) as {
       photoDataUrl?: string;
       sigDataUrl?: string;
+      name?: string;
+      inviteSlug?: string;
     };
     const photo = parseDataUrl(body.photoDataUrl);
     const sig = parseDataUrl(body.sigDataUrl);
@@ -49,6 +51,8 @@ export async function POST(request: Request) {
       photo: photo?.buf,
       photoExt: photo?.ext,
       sig: sig?.buf,
+      name: body.name,
+      inviteSlug: body.inviteSlug,
     });
     return NextResponse.json({ entry }, { status: 201 });
   } catch (e) {

@@ -1,5 +1,7 @@
 export type ContributionEntry = {
   timestamp: string;
+  /** Tên người gửi (từ form hoặc slug mời). */
+  name?: string;
   /** URL công khai (Vercel Blob) hoặc tên file local. Ảnh kỷ niệm — tuỳ chọn. */
   photoUrl?: string;
   /** URL công khai (Vercel Blob) hoặc tên file local `*.png`. Chữ ký — tuỳ chọn. */
