@@ -58,6 +58,28 @@ export function InvitationPage() {
   const [rDone, setRDone] = useState(false);
   const [rsvpSubmitting, setRsvpSubmitting] = useState(false);
   const [rsvpError, setRsvpError] = useState<string | null>(null);
+  const [rsvpLoading, setRsvpLoading] = useState(() => Boolean(slug));
+
+  useEffect(() => {
+    if (!slug) return;
+    setRsvpLoading(true);
+    fetch(`/api/rsvp?inviteSlug=${encodeURIComponent(slug)}`, {
+      cache: "no-store",
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        const entry = data?.entry as
+          | { attend?: "yes" | "no"; message?: string }
+          | null
+          | undefined;
+        if (!entry?.attend) return;
+        setRAttend(entry.attend);
+        setRMsg(entry.message ?? "");
+        setRDone(true);
+      })
+      .catch(() => {})
+      .finally(() => setRsvpLoading(false));
+  }, [slug]);
 
   useEffect(() => {
     fetch("/api/guestbook", { cache: "no-store" })
@@ -154,7 +176,7 @@ export function InvitationPage() {
   }, [launch]);
 
   const submitRSVP = useCallback(async () => {
-    const name = rName.trim();
+    const name = (displayName ?? rName).trim();
     if (!name || !rAttend) return;
     setRsvpSubmitting(true);
     setRsvpError(null);
@@ -182,7 +204,7 @@ export function InvitationPage() {
     } finally {
       setRsvpSubmitting(false);
     }
-  }, [launch, rAttend, rMsg, rName, slug]);
+  }, [displayName, launch, rAttend, rMsg, rName, slug]);
 
   const yes = rAttend === "yes";
   const rsvpIcon = yes ? "🎉" : "💛";
@@ -1088,7 +1110,20 @@ export function InvitationPage() {
           <p style={{ color: "#7A6470", fontSize: 15, margin: "0 0 34px" }}>
             Diễm rất mong được gặp bạn trong ngày đặc biệt này.
           </p>
-          {rDone ? (
+          {rsvpLoading ? (
+            <div
+              style={{
+                background: "#FFFCFA",
+                borderRadius: 24,
+                padding: "40px 36px",
+                border: "1px solid rgba(201,160,91,.25)",
+                color: "#A98AA0",
+                fontSize: 15,
+              }}
+            >
+              Đang tải xác nhận của bạn…
+            </div>
+          ) : rDone ? (
             <div
               style={{
                 background: "#FFFCFA",
@@ -1135,22 +1170,53 @@ export function InvitationPage() {
               >
                 Họ và tên
               </label>
-              <input
-                value={rName}
-                onChange={(e) => onRNameChange(e.target.value)}
-                placeholder="Tên của bạn"
-                style={{
-                  width: "100%",
-                  padding: "14px 16px",
-                  borderRadius: 12,
-                  border: "1px solid rgba(201,160,91,.4)",
-                  background: "#FBF4EF",
-                  color: "#4F3B47",
-                  fontSize: 15,
-                  outline: "none",
-                  marginBottom: 20,
-                }}
-              />
+              {isPersonalized && displayName ? (
+                <div
+                  style={{
+                    width: "100%",
+                    padding: "14px 16px",
+                    borderRadius: 12,
+                    border: "1px solid rgba(201,160,91,.35)",
+                    background: "#F4ECF6",
+                    color: "#4F3B47",
+                    fontSize: 15,
+                    fontWeight: 600,
+                    marginBottom: 8,
+                  }}
+                >
+                  {displayName}
+                </div>
+              ) : (
+                <input
+                  value={rName}
+                  onChange={(e) => onRNameChange(e.target.value)}
+                  placeholder="Tên của bạn"
+                  style={{
+                    width: "100%",
+                    padding: "14px 16px",
+                    borderRadius: 12,
+                    border: "1px solid rgba(201,160,91,.4)",
+                    background: "#FBF4EF",
+                    color: "#4F3B47",
+                    fontSize: 15,
+                    outline: "none",
+                    marginBottom: 20,
+                  }}
+                />
+              )}
+              {isPersonalized && displayName ? (
+                <p
+                  style={{
+                    fontSize: 13,
+                    color: "#7A6470",
+                    margin: "0 0 20px",
+                    lineHeight: 1.45,
+                  }}
+                >
+                  Trạng thái tham dự sẽ ghi vào Sheet theo tên từ link mời của
+                  bạn.
+                </p>
+              ) : null}
               <label
                 style={{
                   display: "block",

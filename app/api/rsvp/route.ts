@@ -1,9 +1,29 @@
 import { NextResponse } from "next/server";
 import { STORAGE_HELP, formatStorageError } from "@/lib/persist";
-import { appendRsvp } from "@/lib/rsvp-store";
+import { appendRsvp, findRsvpByInviteSlug } from "@/lib/rsvp-store";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+
+export async function GET(request: Request) {
+  const inviteSlug = new URL(request.url).searchParams.get("inviteSlug")?.trim();
+  if (!inviteSlug) {
+    return NextResponse.json(
+      { error: "Thiếu inviteSlug" },
+      { status: 400 }
+    );
+  }
+  try {
+    const entry = await findRsvpByInviteSlug(inviteSlug);
+    return NextResponse.json({ entry });
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json(
+      { error: "Không đọc được RSVP" },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(request: Request) {
   try {
