@@ -294,7 +294,7 @@ export function InvitationPage() {
             <div>Ngành Digital Marketing</div>
           </div>
           <div style={{ letterSpacing: ".28em", fontSize: 13, color: "#A98AA0" }}>
-            NIÊN KHÓA 2023 — 2026
+            NIÊN KHÓA 2022 — 2026
           </div>
           <p
             style={{
