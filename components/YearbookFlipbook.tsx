@@ -7,19 +7,41 @@ import { IMAGES, YEARBOOK_PAGE_COUNT } from "@/lib/config";
 type LeafSide = {
   cover?: boolean;
   endcover?: boolean;
+  /** Trang chữ (có ảnh nền — xen kẽ với trang ảnh thuần). */
   memoSpread?: boolean;
+  textSpread?: boolean;
+  text?: string;
   slot?: keyof typeof IMAGES.yearbook;
   cap?: string;
 };
 
+/** Mặt trái/phải mỗi tờ — xen kẽ chữ ↔ ảnh khi lật tuần tự. */
 const LEAVES: { front: LeafSide; back: LeafSide }[] = [
-  { front: { cover: true }, back: { slot: "yb1", cap: "" } },
-  { front: { slot: "yb2", cap: "" }, back: { slot: "yb3", cap: "" } },
+  { front: { cover: true }, back: { slot: "yb1", cap: "Tân sinh viên · 2023" } },
   {
-    front: { slot: "yb4", cap: "" },
-    back: { memoSpread: true },
+    front: { slot: "yb2", cap: "" },
+    back: {
+      textSpread: true,
+      slot: "yb3",
+      text: "Những khoảnh khắc\nkhông thể quên",
+    },
   },
-  { front: {}, back: { endcover: true } },
+  {
+    front: {
+      memoSpread: true,
+      slot: "yb5",
+      text: "Bốn năm — một chặng\nđẹp nhất 💛",
+    },
+    back: { slot: "yb4", cap: "Một thời để nhớ" },
+  },
+  {
+    front: { slot: "yb6", cap: "" },
+    back: {
+      endcover: true,
+      slot: "yb2",
+      text: "Cảm ơn vì đã\nđồng hành 💛",
+    },
+  },
 ];
 
 const N = YEARBOOK_PAGE_COUNT;
@@ -46,6 +68,79 @@ function leafZIndex(
 ) {
   if (animatingLeaf === i) return ANIMATING_Z;
   return flipped ? i : N - i;
+}
+
+function YearbookFaceContent({ side }: { side: LeafSide }) {
+  if (side.cover) {
+    return (
+      <div className="yearbook-cover yearbook-cover--front">
+        <div className="yearbook-cover-label">KỶ YẾU</div>
+        <div className="yearbook-cover-years">2023 — 2026</div>
+        <div className="yearbook-cover-name">Kiều Diễm</div>
+      </div>
+    );
+  }
+
+  const prose =
+    side.memoSpread || side.textSpread || (side.endcover && side.text);
+  if (prose && side.slot) {
+    return (
+      <div className="yearbook-prose-page">
+        <ImageSlot
+          src={IMAGES.yearbook[side.slot] || undefined}
+          alt=""
+          placeholder="Ảnh kỷ yếu"
+          sizes="(max-width: 600px) 50vw, 280px"
+          className="yearbook-photo yearbook-photo--backdrop"
+          fit="contain"
+        />
+        <div
+          className={`yearbook-prose-page__card${
+            side.endcover
+              ? " yearbook-cover yearbook-cover--end yearbook-cover--overlay"
+              : side.memoSpread
+                ? " yearbook-memo yearbook-memo--overlay"
+                : " yearbook-text-spread"
+          }`}
+        >
+          {(side.text ?? "").split("\n").map((line, idx) => (
+            <span key={idx}>
+              {idx > 0 ? <br /> : null}
+              {line}
+            </span>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (side.endcover) {
+    return (
+      <div className="yearbook-cover yearbook-cover--end">
+        Cảm ơn vì đã
+        <br />
+        đồng hành 💛
+      </div>
+    );
+  }
+
+  if (side.slot) {
+    return (
+      <>
+        <ImageSlot
+          src={IMAGES.yearbook[side.slot] || undefined}
+          alt={side.cap ?? ""}
+          placeholder="Ảnh kỷ yếu"
+          sizes="(max-width: 600px) 50vw, 280px"
+          className="yearbook-photo"
+          fit="contain"
+        />
+        {side.cap ? <div className="yearbook-caption">{side.cap}</div> : null}
+      </>
+    );
+  }
+
+  return null;
 }
 
 export function YearbookFlipbook() {
@@ -161,56 +256,10 @@ export function YearbookFlipbook() {
               }}
             >
               <div className="yearbook-face yearbook-face--front">
-                {lf.front.cover ? (
-                  <div className="yearbook-cover yearbook-cover--front">
-                    <div className="yearbook-cover-label">KỶ YẾU</div>
-                    <div className="yearbook-cover-years">2022 — 2026</div>
-                    <div className="yearbook-cover-name">Kiều Diễm</div>
-                  </div>
-                ) : lf.front.slot ? (
-                  <>
-                    <ImageSlot
-                      src={IMAGES.yearbook[lf.front.slot] || undefined}
-                      alt={lf.front.cap ?? ""}
-                      placeholder="Ảnh kỷ yếu"
-                      sizes="(max-width: 600px) 50vw, 280px"
-                      className="yearbook-photo"
-                      fit="contain"
-                    />
-                    {lf.front.cap ? (
-                      <div className="yearbook-caption">{lf.front.cap}</div>
-                    ) : null}
-                  </>
-                ) : null}
+                <YearbookFaceContent side={lf.front} />
               </div>
               <div className="yearbook-face yearbook-face--back">
-                {lf.back.endcover ? (
-                  <div className="yearbook-cover yearbook-cover--end">
-                    Cảm ơn vì đã
-                    <br />
-                    đồng hành 💛
-                  </div>
-                ) : lf.back.memoSpread ? (
-                  <div className="yearbook-memo">
-                    Bốn năm — một chặng
-                    <br />
-                    đẹp nhất 💛
-                  </div>
-                ) : lf.back.slot ? (
-                  <>
-                    <ImageSlot
-                      src={IMAGES.yearbook[lf.back.slot] || undefined}
-                      alt={lf.back.cap ?? ""}
-                      placeholder="Ảnh kỷ yếu"
-                      sizes="(max-width: 600px) 50vw, 280px"
-                      className="yearbook-photo"
-                      fit="contain"
-                    />
-                    {lf.back.cap ? (
-                      <div className="yearbook-caption">{lf.back.cap}</div>
-                    ) : null}
-                  </>
-                ) : null}
+                <YearbookFaceContent side={lf.back} />
               </div>
             </div>
           );

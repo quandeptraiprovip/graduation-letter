@@ -26,6 +26,8 @@ export const IMAGES = {
     yb2: "/images/DSC04639.JPG",
     yb3: "/images/DSC05040.JPG",
     yb4: "/images/DSC05047.JPG",
+    yb5: "/images/DSC03963.JPG",
+    yb6: "/images/DSC03972.JPG",
   },
 } as const;
 
