@@ -3,16 +3,17 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useInviteGuest } from "@/hooks/useInviteGuest";
 import { usePrefillInviteName } from "@/hooks/usePrefillInviteName";
 import { hrefWithInviteSlug } from "@/lib/invite-path";
 import { HeroInviteCopy } from "@/components/HeroInviteCopy";
 import { JourneyAlbumSection } from "@/components/JourneyAlbumSection";
+import { YearbookFlipbook } from "@/components/YearbookFlipbook";
 import { ImageSlot } from "@/components/ImageSlot";
 import { LuuButPromoSection } from "@/components/LuuButPromoSection";
 import type { GlobeWishPoint } from "@/components/WishGlobe";
-import { EVENT_GEO, EVENT_ISO, EVENT_MAPS_QUERY, IMAGES, YEARBOOK_PAGE_COUNT } from "@/lib/config";
+import { EVENT_GEO, EVENT_ISO, EVENT_MAPS_QUERY, IMAGES } from "@/lib/config";
 import type { GuestEntry } from "@/lib/guestbook-store";
 import { useConfetti } from "@/hooks/useConfetti";
 import { useCountdown } from "@/hooks/useCountdown";
@@ -38,7 +39,6 @@ export function InvitationPage() {
   const heroRef = useRef<HTMLDivElement>(null);
   const capRef = useRef<HTMLDivElement>(null);
 
-  const [page, setPage] = useState(0);
   const [globePoints, setGlobePoints] = useState<GlobeWishPoint[]>([]);
   const [rName, setRName] = useState("");
   const { onNameChange: onRNameChange } = usePrefillInviteName(
@@ -98,39 +98,6 @@ export function InvitationPage() {
       })
       .catch(() => {});
   }, []);
-
-  const leaves = useMemo(() => {
-    const N = YEARBOOK_PAGE_COUNT;
-    const leaf = (
-      i: number,
-      front: { cover?: boolean; slot?: keyof typeof IMAGES.yearbook; cap?: string },
-      back: {
-        endcover?: boolean;
-        memoSpread?: boolean;
-        slot?: keyof typeof IMAGES.yearbook;
-        cap?: string;
-      }
-    ) => ({
-      front,
-      back,
-      tf: i < page ? "rotateY(-179deg)" : "rotateY(0deg)",
-      z: i < page ? i : N - i,
-    });
-    return [
-      leaf(0, { cover: true }, { slot: "yb1", cap: "Tân sinh viên · 2023" }),
-      leaf(
-        1,
-        { slot: "yb2", cap: "" },
-        { slot: "yb3", cap: "" }
-      ),
-      leaf(
-        2,
-        { slot: "yb4", cap: "Một thời để nhớ" },
-        { memoSpread: true }
-      ),
-      leaf(3, {}, { endcover: true }),
-    ];
-  }, [page]);
 
   useEffect(() => {
     const hero = heroRef.current;
@@ -660,283 +627,7 @@ export function InvitationPage() {
 
       <JourneyAlbumSection />
 
-      {/* YEARBOOK */}
-      <section
-        style={{
-          padding: "84px 24px 96px",
-          background: "#FBF4EF",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ textAlign: "center", margin: "0 auto 44px", maxWidth: 620 }}>
-          <div
-            style={{
-              letterSpacing: ".32em",
-              fontSize: 12,
-              fontWeight: 600,
-              color: "#C9A05B",
-              textTransform: "uppercase",
-            }}
-          >
-            Cuốn kỷ yếu
-          </div>
-          <h2
-            style={{
-              fontFamily: "'Playfair Display', serif",
-              fontWeight: 600,
-              fontSize: "clamp(28px, 5.2vw, 42px)",
-              color: "#4F3B47",
-              margin: "10px 0 0",
-            }}
-          >
-            Lật từng trang ký ức
-          </h2>
-        </div>
-        <div
-          style={{
-            position: "relative",
-            width: 560,
-            maxWidth: "100%",
-            height: 380,
-            perspective: 2400,
-            margin: "0 auto",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "50%",
-              height: 380,
-              borderRadius: "6px 0 0 6px",
-              background: "#F1E4DC",
-              boxShadow: "inset -22px 0 34px rgba(79,59,71,.14)",
-              border: "1px solid rgba(201,160,91,.3)",
-            }}
-          />
-          {leaves.map((lf, i) => (
-            <div
-              key={i}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: "50%",
-                width: "50%",
-                height: 380,
-                transformOrigin: "left center",
-                transformStyle: "preserve-3d",
-                transition: "transform .95s cubic-bezier(.645,.045,.355,1)",
-                transform: lf.tf,
-                zIndex: lf.z,
-              }}
-            >
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  backfaceVisibility: "hidden",
-                  borderRadius: "0 6px 6px 0",
-                  overflow: "hidden",
-                  background: "#FFFCFA",
-                  border: "1px solid rgba(201,160,91,.32)",
-                  boxShadow: "6px 6px 22px rgba(79,59,71,.16)",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                {lf.front.cover ? (
-                  <div
-                    style={{
-                      flex: 1,
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 14,
-                      background: "linear-gradient(160deg,#F3C6CE,#D9CDEA)",
-                      padding: 24,
-                    }}
-                  >
-                    <div style={{ letterSpacing: ".34em", fontSize: 11, color: "#5C4753" }}>
-                      KỶ YẾU
-                    </div>
-                    <div
-                      style={{
-                        fontFamily: "'Playfair Display', serif",
-                        fontStyle: "italic",
-                        fontWeight: 600,
-                        fontSize: 30,
-                        color: "#4F3B47",
-                      }}
-                    >
-                      2022 — 2026
-                    </div>
-                    <div
-                      style={{
-                        fontFamily: "'Playfair Display', serif",
-                        fontSize: 20,
-                        color: "#6B5560",
-                      }}
-                    >
-                      Kiều Diễm
-                    </div>
-                  </div>
-                ) : lf.front.slot ? (
-                  <>
-                    <ImageSlot
-                      src={IMAGES.yearbook[lf.front.slot] || undefined}
-                      alt={lf.front.cap ?? ""}
-                      placeholder="Ảnh kỷ yếu"
-                      sizes="(max-width: 600px) 50vw, 280px"
-                      style={{ width: "100%", flex: 1, minHeight: 280 }}
-                    />
-                    <div
-                      style={{
-                        padding: "11px 14px",
-                        fontFamily: "'Playfair Display', serif",
-                        fontStyle: "italic",
-                        fontSize: 15,
-                        color: "#5C4753",
-                        borderTop: "1px solid rgba(201,160,91,.3)",
-                      }}
-                    >
-                      {lf.front.cap}
-                    </div>
-                  </>
-                ) : null}
-              </div>
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  backfaceVisibility: "hidden",
-                  transform: "rotateY(180deg)",
-                  borderRadius: "6px 0 0 6px",
-                  overflow: "hidden",
-                  background: "#FFFCFA",
-                  border: "1px solid rgba(201,160,91,.32)",
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
-                {lf.back.endcover ? (
-                  <div
-                    style={{
-                      flex: 1,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      background: "linear-gradient(160deg,#CBE7D8,#D9CDEA)",
-                      padding: 24,
-                      textAlign: "center",
-                      fontFamily: "'Playfair Display', serif",
-                      fontStyle: "italic",
-                      fontSize: 24,
-                      color: "#4F3B47",
-                    }}
-                  >
-                    Cảm ơn vì đã
-                    <br />
-                    đồng hành 💛
-                  </div>
-                ) : lf.back.memoSpread ? (
-                  <div
-                    style={{
-                      flex: 1,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      padding: 28,
-                      textAlign: "center",
-                      background:
-                        "repeating-linear-gradient(#FFFDFB,#FFFDFB 38px,rgba(201,160,91,.12) 39px,#FFFDFB 40px)",
-                      fontFamily: "'Playfair Display', serif",
-                      fontStyle: "italic",
-                      fontSize: 20,
-                      lineHeight: 1.55,
-                      color: "#5C4753",
-                    }}
-                  >
-                    Bốn năm — một chặng
-                    <br />
-                    đẹp nhất 💛
-                  </div>
-                ) : lf.back.slot ? (
-                  <>
-                    <ImageSlot
-                      src={IMAGES.yearbook[lf.back.slot] || undefined}
-                      alt={lf.back.cap ?? ""}
-                      placeholder="Ảnh kỷ yếu"
-                      sizes="(max-width: 600px) 50vw, 280px"
-                      style={{ width: "100%", flex: 1, minHeight: 280 }}
-                    />
-                    <div
-                      style={{
-                        padding: "11px 14px",
-                        fontFamily: "'Playfair Display', serif",
-                        fontStyle: "italic",
-                        fontSize: 15,
-                        color: "#5C4753",
-                        borderTop: "1px solid rgba(201,160,91,.3)",
-                      }}
-                    >
-                      {lf.back.cap}
-                    </div>
-                  </>
-                ) : null}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 18,
-            marginTop: 34,
-          }}
-        >
-          <button
-            type="button"
-            className="btn-hover"
-            onClick={() => setPage((p) => Math.max(0, p - 1))}
-            style={{
-              border: "1px solid rgba(201,160,91,.5)",
-              background: "#FFFCFA",
-              color: "#4F3B47",
-              fontWeight: 600,
-              fontSize: 14,
-              padding: "11px 22px",
-              borderRadius: 999,
-              cursor: "pointer",
-            }}
-          >
-            ← Trang trước
-          </button>
-          <span style={{ fontSize: 13, color: "#A98AA0", minWidth: 78 }}>
-            {page} / {YEARBOOK_PAGE_COUNT}
-          </span>
-          <button
-            type="button"
-            className="btn-hover"
-            onClick={() => setPage((p) => Math.min(YEARBOOK_PAGE_COUNT, p + 1))}
-            style={{
-              border: "none",
-              background: "#4F3B47",
-              color: "#FBF4EF",
-              fontWeight: 600,
-              fontSize: 14,
-              padding: "11px 22px",
-              borderRadius: 999,
-              cursor: "pointer",
-            }}
-          >
-            Trang sau →
-          </button>
-        </div>
-      </section>
+      <YearbookFlipbook />
 
       {/* WISH GLOBE — lời chúc từ khắp nơi */}
       <section

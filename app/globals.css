@@ -1167,6 +1167,336 @@ body {
   }
 }
 
+/* ---------- Yearbook flipbook ---------- */
+.yearbook-section {
+  padding: 84px 24px 96px;
+  background: #fbf4ef;
+  text-align: center;
+}
+
+.yearbook-header {
+  margin: 0 auto 40px;
+  max-width: 620px;
+}
+
+.yearbook-eyebrow {
+  letter-spacing: 0.32em;
+  font-size: 12px;
+  font-weight: 600;
+  color: #c9a05b;
+  text-transform: uppercase;
+}
+
+.yearbook-title {
+  font-family: "Playfair Display", serif;
+  font-weight: 600;
+  font-size: clamp(28px, 5.2vw, 42px);
+  color: #4f3b47;
+  margin: 10px 0 0;
+}
+
+.yearbook-swipe-hint {
+  display: none;
+  margin: 14px 0 0;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #a98aa0;
+}
+
+.yearbook-stage {
+  --yb-flip-dur: 0.88s;
+  --yb-flip-ease: cubic-bezier(0.33, 1, 0.52, 1);
+  --yb-h: clamp(268px, 52vw, 380px);
+  --yb-persp: clamp(960px, 165vw, 2400px);
+
+  position: relative;
+  width: min(560px, 100%);
+  height: var(--yb-h);
+  margin: 0 auto;
+  perspective: var(--yb-persp);
+  perspective-origin: 50% 44%;
+  touch-action: pan-y pinch-zoom;
+  transform: translateZ(0);
+}
+
+.yearbook-spine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  border-radius: 6px 0 0 6px;
+  background: #f1e4dc;
+  box-shadow: inset -22px 0 34px rgba(79, 59, 71, 0.14);
+  border: 1px solid rgba(201, 160, 91, 0.3);
+  pointer-events: none;
+}
+
+.yearbook-leaf {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  transform-origin: left center;
+  transform-style: preserve-3d;
+  transform: rotateY(0deg) translateZ(0.5px);
+  transition: none;
+  will-change: auto;
+}
+
+.yearbook-leaf--flipped {
+  transform: rotateY(-180deg) translateZ(0.5px);
+}
+
+.yearbook-leaf--animating {
+  transition: transform var(--yb-flip-dur) var(--yb-flip-ease);
+  will-change: transform;
+}
+
+.yearbook-leaf--animating .yearbook-face--front {
+  box-shadow: 4px 2px 18px rgba(79, 59, 71, 0.12);
+}
+
+.yearbook-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+  background: #fffcfa;
+  border: 1px solid rgba(201, 160, 91, 0.32);
+  display: flex;
+  flex-direction: column;
+}
+
+.yearbook-face--front {
+  border-radius: 0 6px 6px 0;
+  box-shadow: 6px 6px 22px rgba(79, 59, 71, 0.14);
+}
+
+.yearbook-face--back {
+  transform: rotateY(180deg);
+  border-radius: 6px 0 0 6px;
+  box-shadow: -4px 4px 18px rgba(79, 59, 71, 0.1);
+}
+
+.yearbook-photo {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  background: linear-gradient(165deg, #faf6f2 0%, #efe6df 100%);
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+.yearbook-photo img {
+  object-fit: contain !important;
+  object-position: center center;
+}
+
+.yearbook-caption {
+  padding: 11px 14px;
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: 15px;
+  color: #5c4753;
+  border-top: 1px solid rgba(201, 160, 91, 0.3);
+  flex-shrink: 0;
+}
+
+.yearbook-cover {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  gap: 14px;
+}
+
+.yearbook-cover--front {
+  background: linear-gradient(160deg, #f3c6ce, #d9cdea);
+}
+
+.yearbook-cover-label {
+  letter-spacing: 0.34em;
+  font-size: 11px;
+  color: #5c4753;
+}
+
+.yearbook-cover-years {
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(22px, 5vw, 30px);
+  color: #4f3b47;
+}
+
+.yearbook-cover-name {
+  font-family: "Playfair Display", serif;
+  font-size: clamp(17px, 3.8vw, 20px);
+  color: #6b5560;
+}
+
+.yearbook-cover--end {
+  background: linear-gradient(160deg, #cbe7d8, #d9cdea);
+  text-align: center;
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: clamp(18px, 4.5vw, 24px);
+  line-height: 1.45;
+  color: #4f3b47;
+}
+
+.yearbook-memo {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  text-align: center;
+  background: repeating-linear-gradient(
+    #fffdfb,
+    #fffdfb 38px,
+    rgba(201, 160, 91, 0.12) 39px,
+    #fffdfb 40px
+  );
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: clamp(17px, 4vw, 20px);
+  line-height: 1.55;
+  color: #5c4753;
+}
+
+.yearbook-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px 18px;
+  margin-top: 32px;
+}
+
+.yearbook-page-label {
+  font-size: 13px;
+  color: #a98aa0;
+  min-width: 78px;
+  text-align: center;
+}
+
+.yearbook-btn-label--short {
+  display: none;
+}
+
+.yearbook-btn {
+  font-weight: 600;
+  font-size: 14px;
+  padding: 11px 22px;
+  border-radius: 999px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  box-sizing: border-box;
+  transition: opacity 0.2s ease;
+}
+
+.yearbook-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.yearbook-btn--ghost {
+  border: 1px solid rgba(201, 160, 91, 0.5);
+  background: #fffcfa;
+  color: #4f3b47;
+}
+
+.yearbook-btn--primary {
+  background: #4f3b47;
+  color: #fbf4ef;
+  border-color: #4f3b47;
+}
+
+@media (max-width: 768px) {
+  .yearbook-section {
+    padding: 56px 16px 72px;
+  }
+
+  .yearbook-header {
+    margin-bottom: 28px;
+    padding: 0 6px;
+  }
+
+  .yearbook-swipe-hint {
+    display: block;
+  }
+
+  .yearbook-stage {
+    --yb-flip-dur: 0.72s;
+    --yb-flip-ease: cubic-bezier(0.25, 0.9, 0.35, 1);
+    --yb-h: clamp(280px, 62vw, 360px);
+    --yb-persp: clamp(680px, 130vw, 1100px);
+    width: min(100%, 420px);
+  }
+
+  .yearbook-spine {
+    box-shadow: inset -14px 0 22px rgba(79, 59, 71, 0.12);
+  }
+
+  .yearbook-face--front {
+    box-shadow: 4px 4px 16px rgba(79, 59, 71, 0.12);
+  }
+
+  .yearbook-controls {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 420px;
+    margin-top: 26px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 4px;
+    flex-wrap: unset;
+  }
+
+  .yearbook-btn-label--long {
+    display: none;
+  }
+
+  .yearbook-btn-label--short {
+    display: inline;
+  }
+
+  .yearbook-btn {
+    width: 100%;
+    padding: 12px 10px;
+    min-height: 44px;
+    font-size: 13px;
+    line-height: 1.2;
+  }
+
+  .yearbook-page-label {
+    min-width: 0;
+    padding: 0 2px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .yearbook-photo {
+    padding: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .yearbook-leaf--animating {
+    transition: none;
+  }
+}
+
 /* ---------- Hero — lời mời cá nhân ---------- */
 .invite-hero-letter {
   position: relative;
