@@ -18,7 +18,7 @@ export const IMAGES = {
     al2: "/images/DSC03782.JPG",
     al3: "/images/DSC03911.JPG",
     al4: "/images/DSC05032.JPG",
-    al5: "/images/DSC04207.JPG",
+    al5: "/images/DSC05125.JPG",
     al6: "/images/DSC04254.JPG",
   },
   yearbook: {
@@ -28,8 +28,10 @@ export const IMAGES = {
     yb4: "/images/DSC05047.JPG",
     yb5: "/images/DSC03963.JPG",
     yb6: "/images/DSC03972.JPG",
+    yb7: "/images/DSC03969.JPG",
+    yb8: "/images/DSC04260.JPG",
   },
 } as const;
 
-/** Số “tờ” lật trong cuốn kỷ yếu (0 … YEARBOOK_PAGE_COUNT). */
-export const YEARBOOK_PAGE_COUNT = 4;
+/** Số "tờ" lật trong cuốn kỷ yếu (0 … YEARBOOK_PAGE_COUNT). */
+export const YEARBOOK_PAGE_COUNT = 5;

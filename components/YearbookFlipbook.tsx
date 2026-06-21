@@ -30,11 +30,6 @@ const LEFT_BY_SETTLED_PAGE: LeftPage[] = [
     variant: "quote",
   },
   { kind: "image", slot: "yb5" },
-  {
-    kind: "text",
-    text: "Những khoảnh khắc\nkhông thể quên",
-    variant: "quote",
-  },
   { kind: "image", slot: "yb4", cap: "Một thời để nhớ" },
 ];
 
@@ -53,6 +48,10 @@ const LEAVES: { front: LeafSide; back: LeafSide }[] = [
       text: "Bốn năm — một chặng\nđẹp nhất 💛",
     },
     back: { slot: "yb4", cap: "" },
+  },
+  {
+    front: { slot: "yb7", cap: "" },
+    back: { slot: "yb8", cap: "" },
   },
   {
     front: { slot: "yb6", cap: "" },
